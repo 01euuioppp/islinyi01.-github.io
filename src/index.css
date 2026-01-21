@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bauhaus-red: #D21F3C;
+  --color-bauhaus-blue: #1D5897;
+  --color-bauhaus-yellow: #F6B800;
+  --color-bauhaus-black: #1A1A1A;
+  --color-bauhaus-white: #F0F0F0;
+}
