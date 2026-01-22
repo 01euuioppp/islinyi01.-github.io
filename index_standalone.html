@@ -62,6 +62,23 @@
             transform: translateY(0);
             pointer-events: auto;
         }
+
+        /* Floating Animation */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes float-medium {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes float-fast {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+        .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
+        .animate-float-fast { animation: float-fast 4s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-[#f5f5f7] text-[#1d1d1f]">
@@ -82,6 +99,9 @@
         );
         const ArrowRight = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        );
+        const ArrowDown = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
         );
         const Download = ({ className }) => (
              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
@@ -105,14 +125,28 @@
         };
 
         const ContactItem = ({ icon, label, value, colorClass = "bg-black" }) => {
+            const [copied, setCopied] = useState(false);
+
+            const handleCopy = () => {
+                navigator.clipboard.writeText(value).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                });
+            };
+
             return (
-                <div className="hover-trigger relative flex flex-col items-center justify-center group">
-                    <div className={`p-4 rounded-full bg-white shadow-sm border border-gray-100 text-[#1d1d1f] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md cursor-pointer`}>
+                <div 
+                    className="hover-trigger relative flex flex-col items-center justify-center group"
+                    onClick={handleCopy}
+                >
+                    <div className={`p-4 rounded-full bg-white shadow-sm border border-gray-100 text-[#1d1d1f] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md cursor-pointer active:scale-95`}>
                         {icon}
                     </div>
-                    <div className="hover-target absolute top-full mt-3 px-4 py-2 bg-[#1d1d1f]/90 backdrop-blur-md text-white text-sm rounded-xl shadow-xl whitespace-nowrap z-50 flex flex-col items-center">
+                    <div className="hover-target absolute top-full mt-3 px-4 py-2 bg-[#1d1d1f]/90 backdrop-blur-md text-white text-sm rounded-xl shadow-xl whitespace-nowrap z-50 flex flex-col items-center min-w-[100px]">
                         <span className="text-xs text-gray-400 mb-0.5">{label}</span>
-                        <span className="font-medium tracking-wide">{value}</span>
+                        <span className={`font-medium tracking-wide transition-colors duration-300 ${copied ? 'text-green-400' : 'text-white'}`}>
+                            {copied ? '已复制 Copied!' : value}
+                        </span>
                         {/* Little triangle arrow */}
                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#1d1d1f]/90 rotate-45"></div>
                     </div>
@@ -139,6 +173,105 @@
 
         // --- Main App ---
 
+        const DetailedProjectCard = ({ title, date, children, images = [] }) => {
+            const [isHovered, setIsHovered] = useState(false);
+            const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+            useEffect(() => {
+                let interval;
+                if (isHovered && images.length > 0) {
+                    interval = setInterval(() => {
+                        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+                    }, 1500);
+                } else {
+                    setCurrentImageIndex(0);
+                }
+                return () => clearInterval(interval);
+            }, [isHovered, images]);
+
+            return (
+                <div 
+                    className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative group"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-xl font-medium">{title}</h4>
+                        <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap ml-2">{date}</span>
+                    </div>
+                    <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
+                        {children}
+                    </ul>
+
+                    {/* Floating Preview with Smooth Transition */}
+                    <div className={`absolute right-8 bottom-[100%] mb-4 w-64 aspect-video bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full h-full relative bg-gray-100 flex items-center justify-center">
+                             {images.map((img, index) => (
+                                <img 
+                                    key={index}
+                                    src={img} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                                />
+                             ))}
+                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-10">
+                                {currentImageIndex + 1}/{images.length}
+                             </div>
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-white shadow-sm"></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const MiniProjectCard = ({ title, date, images = [] }) => {
+            const [isHovered, setIsHovered] = useState(false);
+            const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+            useEffect(() => {
+                let interval;
+                if (isHovered && images.length > 0) {
+                    interval = setInterval(() => {
+                        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+                    }, 1500);
+                } else {
+                    setCurrentImageIndex(0);
+                }
+                return () => clearInterval(interval);
+            }, [isHovered, images]);
+
+            return (
+                <div 
+                    className="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors relative group"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className="flex justify-between items-start mb-1">
+                        <span className="font-medium text-[#1d1d1f]">{title}</span>
+                        <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap ml-2">{date}</span>
+                    </div>
+
+                    {/* Floating Preview with Smooth Transition */}
+                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-48 aspect-video bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full h-full relative bg-gray-100 flex items-center justify-center">
+                             {images.map((img, index) => (
+                                <img 
+                                    key={index}
+                                    src={img} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                                />
+                             ))}
+                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-10">
+                                {currentImageIndex + 1}/{images.length}
+                             </div>
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white shadow-sm"></div>
+                    </div>
+                </div>
+            );
+        };
+
         function App() {
             return (
                 <div className="min-h-screen font-sans selection:bg-black selection:text-white">
@@ -148,14 +281,14 @@
                         <div className="max-w-7xl mx-auto flex justify-between items-center">
                             <div className="text-lg font-bold tracking-tight">林懿的主页 Lin Yi's Homepage</div>
                             <div className="flex gap-4">
-                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('portfolio').scrollIntoView({behavior: 'smooth'})}>Work</Button>
-                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>Resume</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>简历 Resume</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('portfolio').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
                             </div>
                         </div>
                     </nav>
 
                     {/* Hero Section */}
-                    <main className="pt-32 pb-20 px-6">
+                    <main className="relative pt-32 pb-20 px-6">
                         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[70vh]">
                             
                             {/* Text Content */}
@@ -197,18 +330,87 @@
                                 </div>
                             </div>
 
-                            {/* Visual / Abstract Element (Softened Bauhaus) */}
+                            {/* Visual / Abstract Element (Photo & Floating Tags) */}
                             <div className="relative flex justify-center items-center h-[500px] lg:h-auto animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-                                {/* Soft Blurred Orbs */}
-                                <div className="absolute top-0 right-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-[80px] opacity-20 animate-pulse"></div>
-                                <div className="absolute bottom-10 left-10 w-72 h-72 bg-red-400 rounded-full mix-blend-multiply filter blur-[80px] opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-400 rounded-full mix-blend-multiply filter blur-[80px] opacity-20 animate-pulse" style={{animationDelay: '2s'}}></div>
+                                {/* Soft Ambient Background */}
+                                <div className="absolute top-0 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-pulse"></div>
+                                <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-pulse" style={{animationDelay: '1s'}}></div>
                                 
-                                {/* Clean Card Representation */}
-                                <div className="relative z-10 w-full max-w-md aspect-[4/5] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/50 flex flex-col items-center justify-center p-8 text-center glass-card transform hover:scale-[1.02] transition-transform duration-500">
-                                    <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 mb-6 flex items-center justify-center text-4xl shadow-inner">✨</div>
-                                    <h3 className="text-2xl font-semibold mb-2">Simplicity is the ultimate sophistication.</h3>
-                                    <p className="text-gray-500">Creating intuitive and beautiful digital experiences.</p>
+                                {/* Container for Photo and Tags */}
+                                <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
+                                    
+                                    {/* Central Photo Placeholder */}
+                                    <div className="relative z-10 w-48 h-48 md:w-64 md:h-64 bg-white rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
+                                        {/* User: Replace src with your photo */}
+                                        <img 
+                                            src="c:\Users\server\Desktop\islinyi01\20260122-110910.jpg" 
+                                            alt="Lin Yi" 
+                                            className="w-full h-full object-cover bg-gray-50"
+                                        />
+                                    </div>
+
+                                    {/* Floating Tags - Top Left Cluster */}
+                                    <div className="absolute top-[10%] left-[5%] z-20 animate-float-slow">
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎨 UI/UX Design
+                                        </span>
+                                    </div>
+                                    <div className="absolute top-[0%] left-[40%] z-20 animate-float-medium" style={{animationDelay: '0.5s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎮 Unity3D
+                                        </span>
+                                    </div>
+
+                                    {/* Floating Tags - Top Right Cluster */}
+                                    <div className="absolute top-[15%] right-[5%] z-20 animate-float-fast" style={{animationDelay: '1s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🧊 Blender
+                                        </span>
+                                    </div>
+                                    <div className="absolute top-[40%] right-[-2%] z-20 animate-float-slow" style={{animationDelay: '1.5s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            💻 C++
+                                        </span>
+                                    </div>
+
+                                    {/* Floating Tags - Bottom Right Cluster */}
+                                    <div className="absolute bottom-[20%] right-[10%] z-20 animate-float-medium" style={{animationDelay: '2s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🕹️ Nailina
+                                        </span>
+                                    </div>
+                                    <div className="absolute bottom-[5%] right-[35%] z-20 animate-float-fast" style={{animationDelay: '0.8s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🏠 WHERE TO STAY
+                                        </span>
+                                    </div>
+
+                                    {/* Floating Tags - Bottom Left Cluster */}
+                                    <div className="absolute bottom-[15%] left-[5%] z-20 animate-float-slow" style={{animationDelay: '1.2s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🌏 Overseas Live
+                                        </span>
+                                    </div>
+                                    <div className="absolute bottom-[40%] left-[-2%] z-20 animate-float-medium" style={{animationDelay: '2.5s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🏃 Motion Capture
+                                        </span>
+                                    </div>
+                                     <div className="absolute top-[50%] left-[80%] z-20 animate-float-fast" style={{animationDelay: '0.3s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🖨️ 3D Printing
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Scroll Down Indicator */}
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer animate-bounce" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>
+                            <div className="flex flex-col items-center gap-2 group">
+                                <span className="text-xs text-gray-400 font-medium tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Scroll Down</span>
+                                <div className="p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 hover:bg-white transition-colors text-gray-500 group-hover:text-black">
+                                    <ArrowDown className="w-6 h-6" />
                                 </div>
                             </div>
                         </div>
@@ -231,10 +433,10 @@
                                         </div>
                                         <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2021.09 - 2025.06</span>
                                     </div>
-                                    <p className="text-gray-600 mt-4 leading-relaxed">
-                                        GPA：3.88/4.5（专业第一）
-                    
-                                    </p>
+                                    <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
+                                        <p>GPA：<span className="font-semibold text-[#1d1d1f] bg-yellow-100 px-1 rounded">3.88/4.5（专业第一）</span></p>
+                                        <p><span className="font-medium text-[#1d1d1f]">主修课程：</span>Unity3D游戏设计（95）  三维动画（95）  叙事与分镜（93） Arduino编程（92） 动画原型设计（89）数字雕塑（87）......</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -253,8 +455,9 @@
                                             <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2025.06 - 至今</span>
                                         </div>
                                         <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
-                                            <li>独立完成直播活动中的网页、Banner、礼物、座驾、特效等视觉设计内容，注重互动体验与视觉情绪传达，具备游戏化思维，曾参与虚拟角色或场景设计，提升用户在活动中的沉浸感与参与度。</li>
-                                            <li>参与App线上线下推广的视觉设计，涵盖宣传图、启动页、动效视频等，掌握多终端适配规范（iOS/Android），具备从视觉到交互的综合设计能力。</li>
+                                            <li><span className="font-medium text-gray-800">独立完成直播活动视觉设计</span>：负责网页、Banner、礼物、座驾、特效等内容，注重互动体验与视觉情绪传达，具备<span className="font-medium text-gray-800">游戏化思维</span>，曾参与虚拟角色或场景设计，提升用户沉浸感与参与度。</li>
+                                            <li><span className="font-medium text-gray-800">参与App线上线下推广设计</span>：涵盖宣传图、启动页、动效视频等，掌握<span className="font-medium text-gray-800">多终端适配规范（iOS/Android）</span>，具备从视觉到交互的综合设计能力。</li>
+                                            <li><span className="font-medium text-gray-800">游戏UI与虚拟角色设计</span>：擅长多风格绘制与创意表达，能够根据产品定位与用户偏好，打造富有吸引力的视觉内容与虚拟道具形象。</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -265,49 +468,197 @@
                                 <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
                                     🚀 Projects <span className="text-sm font-normal text-gray-400 ml-2">项目经历</span>
                                 </h3>
-                                <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-xl font-medium">Project Name</h4>
-                                        <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2023</span>
+                                <div className="space-y-6">
+                                    {/* Project 1 */}
+                                    <DetailedProjectCard 
+                                        title="海外直播PC端及移动端官网设计" 
+                                        date="2025.06-2025.07"
+                                        images={[
+                                            "c:\Users\server\Desktop\islinyi01\首頁.png",
+                                            "c:\Users\server\Desktop\islinyi01\用戶儲值.png",
+                                            "",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+1+Image+4",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+1+Image+5"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">视觉与交互设计</span>：依据品牌风格及原型图，完成官网 PC 端、移动端约十五个主页面的美术设计，结合直播平台特性，设计<span className="font-medium text-gray-800">独特交互逻辑与辨识度动效</span>。</li>
+                                        <li><span className="font-medium text-gray-800">资源交付与项目落地</span>：完成所有设计图的规范切图，整理完整设计资源包并交付前端、后端开发团队，<span className="font-medium text-gray-800">协助解决落地问题，推动官网顺利上线</span>。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 2 */}
+                                    <DetailedProjectCard 
+                                        title="APP 每周主题活动 UI/UX 全流程设计与落地（高时效・提活提留存）" 
+                                        date="2025.09-2026.03"
+                                        images={[
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+1",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+2",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+3",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+4",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+5"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">全流程设计与主题差异化输出</span>：负责 APP 每周活动从创意构思到最终切图交付的全链路设计，独立定义视觉风格与交互逻辑，确保设计与主题强关联。</li>
+                                        <li><span className="font-medium text-gray-800">高时效项目管控</span>：建立标准化设计流程，在<span className="font-medium text-gray-800">2-3 天 / 期</span>的紧凑周期内完成全环节，保障每期活动按时上线，零延期。</li>
+                                        <li><span className="font-medium text-gray-800">体验优化与业务价值转化</span>：通过优化活动入口视觉吸引力、弹窗交互流畅度、动效表现力，<span className="font-medium text-gray-800">有效提升用户点击参与意愿</span>，助力平台活跃率与留存率显著提升。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 3 */}
+                                    <DetailedProjectCard 
+                                        title="企业专属文化 IP「小萤心」全链路设计与落地（周边量产 + 文化赋能）" 
+                                        date="2025.10-2026.01"
+                                        images={[
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+1",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+2",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+3",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+4",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+5"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">IP 形象全案设计</span>：主导企业专属文化 IP「小萤心」从创意构思到视觉落地的全流程，完成 IP 形象设定、标准三视图绘制、3D 建模、骨骼绑定及动态效果制作。</li>
+                                        <li><span className="font-medium text-gray-800">衍生周边设计与量产对接</span>：基于 IP 形象设计全套周边产品，负责对接工厂进行打样、工艺确认与量产跟进，把控产品质量与交付时效。</li>
+                                        <li><span className="font-medium text-gray-800">文化赋能与品牌传播落地</span>：借助 IP 及周边的场景化应用，有效输出企业文化理念，提升核心用户的品牌认同感与归属感。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 4 */}
+                                    <DetailedProjectCard 
+                                        title="游戏化疗愈装置《Nailina》" 
+                                        date="2024.09-2025.03"
+                                        images={[
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+1",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+2",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+3",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+4",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+5"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">交互与反馈模块</span>：基于用户行为数据设计互动机制，提供即时反馈以增强用户参与感。</li>
+                                        <li><span className="font-medium text-gray-800">美术设计</span>：设计角色、场景、交互界面及装饰元素、界面UI/UX设计。</li>
+                                        <li><span className="font-medium text-gray-800">游戏机制与玩法设计</span>：制定核心游戏玩法，包括角色成长系统、任务挑战机制、社交互动。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 5 */}
+                                    <DetailedProjectCard 
+                                        title="独立游戏《WHERE TO STAY》" 
+                                        date="2024.03-2024.07"
+                                        images={[
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+1",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+2",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+3",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+4",
+                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+5"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">美术、动画模块</span>：骨骼设定、基础及其他动作制作，确认角色技能设计和动作融合方案，人物、场景、道具设计及资产制作。</li>
+                                        <li><span className="font-medium text-gray-800">游戏及编程模块</span>：整体剧情、关卡设计和规则制定，实现游戏核心功能，包括玩家操作、游戏逻辑、界面交互。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Other Projects Overview */}
+                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                        <h4 className="text-xl font-medium mb-4">📂 Other Projects <span className="text-sm font-normal text-gray-400 ml-2">其他项目概览</span></h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <MiniProjectCard
+                                                title="陆河县公共壁画公益项目"
+                                                date="2025.10"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+5"
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="桌游项目《OCEANIC CONSPIRACY》"
+                                                date="2024.11-2024.12"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+5"
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="UE场景《ELDERVERSE》"
+                                                date="2024.03-2024.06"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+5"
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="商业短片设计《Prisoners of the Cycle》"
+                                                date="2024.03-2024.05"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+4+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+4+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+4+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+4+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+4+Image+5"
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="微信上架表情包"
+                                                date="2024"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+5+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+5+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+5+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+5+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+5+Image+5"
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="《双人成行》游戏美术再设计"
+                                                date="2023.07-2023.08"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+6+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+6+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+6+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+6+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+6+Image+5"
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="盲盒设计《Utopia Party》"
+                                                date="2023"
+                                                images={[
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+7+Image+1",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+7+Image+2",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+7+Image+3",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+7+Image+4",
+                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+7+Image+5"
+                                                ]}
+                                            />
+                                        </div>
                                     </div>
-                                    <p className="text-gray-600 mt-2">
-                                        A brief description of the project, your role, and the technologies used.
-                                    </p>
                                 </div>
                             </div>
 
                             {/* Awards & Skills Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
                                         🏆 Awards <span className="text-sm font-normal text-gray-400 ml-2">获奖信息</span>
                                     </h3>
                                     <div className="bg-white p-8 rounded-3xl shadow-sm h-full">
-                                        <ul className="space-y-4">
-                                            <li className="flex justify-between">
-                                                <span className="font-medium">NCDA 未来设计师数字艺术设计大赛 艺术疗愈</span>
-                                                <span className="text-gray-400 text-sm">一等奖</span>
-                                            </li>
-                                            <li className="flex justify-between">
-                                                <span className="font-medium">NCDA 未来设计师数字艺术设计大赛 交互设计</span>
-                                                <span className="text-gray-400 text-sm">二等奖</span>
-                                            </li>
-                                            <li className="flex justify-between">
-                                                <span className="font-medium">NCDA 未来设计师数字艺术设计大赛 造型艺术</span>
-                                                <span className="text-gray-400 text-sm">三等奖</span>
-                                            </li>
-                                            <li className="flex justify-between">
-                                                <span className="font-medium">华灿两岸新锐设计竞赛·华灿奖</span>
-                                                <span className="text-gray-400 text-sm">三等奖</span>
-                                            </li>
-                                            <li className="flex justify-between">
-                                                <span className="font-medium">NCDA 未来设计师数字艺术设计大赛 艺术疗愈</span>
-                                                <span className="text-gray-400 text-sm">一等奖</span>
-                                            </li>
-                                            <li className="flex justify-between">
-                                                <span className="font-medium">NCDA 未来设计师数字艺术设计大赛 交互设计</span>
-                                                <span className="text-gray-400 text-sm">二等奖</span>
-                                            </li>
+                                        <ul className="space-y-6">
+                                            {[
+                                                { name: "NCDA 未来设计师数字艺术设计大赛 艺术疗愈", award: "一等奖" },
+                                                { name: "NCDA 未来设计师数字艺术设计大赛 交互设计", award: "二等奖" },
+                                                { name: "NCDA 未来设计师数字艺术设计大赛 造型艺术", award: "三等奖" },
+                                                { name: "华灿两岸新锐设计竞赛·华灿奖", award: "三等奖" },
+                                                { name: "当代国际艺术与设计双年展·GSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才作品收藏" },
+                                                { name: "当代国际艺术与设计双年展·GSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才奖" }
+                                            ].map((item, index) => (
+                                                <li key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                                    <span className="font-medium text-[#1d1d1f] mb-1 sm:mb-0 pr-4 leading-snug">{item.name}</span>
+                                                    <span className="text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 rounded whitespace-nowrap self-start sm:self-auto mt-1 sm:mt-0">{item.award}</span>
+                                                </li>
+                                            ))}
                                         </ul>
                                     </div>
                                 </div>
@@ -316,12 +667,27 @@
                                     <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
                                         🛠 Skills <span className="text-sm font-normal text-gray-400 ml-2">技能</span>
                                     </h3>
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm h-full flex flex-wrap gap-2">
-                                        {['Figma', 'Adobe Creative Suite', 'Prototyping', 'User Research', 'Motion Design', 'HTML/CSS'].map(skill => (
-                                            <span key={skill} className="px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">
-                                                {skill}
-                                            </span>
-                                        ))}
+                                    <div className="bg-white p-8 rounded-3xl shadow-sm h-full">
+                                        <div className="mb-8">
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Software & Tech</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['Blender', 'Zbrush', 'After Effect', 'Figma', '蓝湖', 'Unity', 'Spine', 'Sai', 'CAD', 'Midjourney', 'Stable Diffusion', 'Photoshop', 'illustrator', '即梦/可灵', 'Unreal Engine', 'Substance Painter', 'Arduino', 'C++'].map(skill => (
+                                                    <span key={skill} className="px-3 py-1.5 bg-[#f5f5f7] text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Artistic & Tools</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['动捕设备', '表情包', '逐帧动画', '相机', '3D打印机', '激光切割机', '泥塑', '国画', '水彩', '铅笔画', '粘土'].map(skill => (
+                                                    <span key={skill} className="px-3 py-1.5 bg-[#f5f5f7] text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
