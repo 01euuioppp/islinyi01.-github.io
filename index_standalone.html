@@ -154,18 +154,31 @@
             );
         };
 
-        const ProjectCard = ({ title, category, color }) => (
+        const ProjectCard = ({ title, category, image, color }) => (
             <div className="group relative aspect-[4/3] rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer">
-                <div className={`absolute inset-0 ${color} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    {/* Placeholder for project image */}
-                    <div className={`w-32 h-32 rounded-full ${color} opacity-20 blur-3xl group-hover:scale-150 transition-transform duration-700`}></div>
-                </div>
+                <div className={`absolute inset-0 ${color || 'bg-gray-100'} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                
+                {/* Cover Image */}
+                {image ? (
+                    <img 
+                        src={image} 
+                        alt={title} 
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className={`w-32 h-32 rounded-full ${color || 'bg-gray-200'} opacity-20 blur-3xl group-hover:scale-150 transition-transform duration-700`}></div>
+                    </div>
+                )}
+
+                {/* Overlay Gradient for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+
                 <div className="absolute bottom-0 left-0 p-8 w-full">
-                    <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">{category}</p>
-                    <h3 className="text-2xl font-bold text-[#1d1d1f] group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
+                    <p className="text-sm font-semibold text-white/80 mb-1 uppercase tracking-wider">{category}</p>
+                    <h3 className="text-2xl font-bold text-white group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
                         {title}
-                        <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                        <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-white" />
                     </h3>
                 </div>
             </div>
@@ -204,14 +217,14 @@
                     </ul>
 
                     {/* Floating Preview with Smooth Transition */}
-                    <div className={`absolute right-8 bottom-[100%] mb-4 w-64 aspect-video bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
-                        <div className="w-full h-full relative bg-gray-100 flex items-center justify-center">
+                    <div className={`absolute right-8 bottom-[100%] mb-4 w-96 aspect-video bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full h-full relative bg-gray-900 flex items-center justify-center">
                              {images.map((img, index) => (
                                 <img 
                                     key={index}
                                     src={img} 
                                     alt={`Preview ${index + 1}`} 
-                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
                                 />
                              ))}
                              <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-10">
@@ -252,14 +265,14 @@
                     </div>
 
                     {/* Floating Preview with Smooth Transition */}
-                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-48 aspect-video bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
-                        <div className="w-full h-full relative bg-gray-100 flex items-center justify-center">
+                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-64 aspect-video bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full h-full relative bg-gray-900 flex items-center justify-center">
                              {images.map((img, index) => (
                                 <img 
                                     key={index}
                                     src={img} 
                                     alt={`Preview ${index + 1}`} 
-                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
                                 />
                              ))}
                              <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-10">
@@ -474,11 +487,11 @@
                                         title="海外直播PC端及移动端官网设计" 
                                         date="2025.06-2025.07"
                                         images={[
-                                            "c:\Users\server\Desktop\islinyi01\首頁.png",
-                                            "c:\Users\server\Desktop\islinyi01\用戶儲值.png",
-                                            "",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+1+Image+4",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+1+Image+5"
+                                            "./首頁1.jpg",
+                                            "pay.jpg",
+                                            "together.jpg",
+                                            "login.jpg",
+                                            "back.jpg"
                                         ]}
                                     >
                                         <li><span className="font-medium text-gray-800">视觉与交互设计</span>：依据品牌风格及原型图，完成官网 PC 端、移动端约十五个主页面的美术设计，结合直播平台特性，设计<span className="font-medium text-gray-800">独特交互逻辑与辨识度动效</span>。</li>
@@ -490,11 +503,11 @@
                                         title="APP 每周主题活动 UI/UX 全流程设计与落地（高时效・提活提留存）" 
                                         date="2025.09-2026.03"
                                         images={[
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+1",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+2",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+3",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+4",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+2+Image+5"
+                                            "1.png",
+                                            "2.png",
+                                            "3.png",
+                                            "4.png",
+                                            "5.png"
                                         ]}
                                     >
                                         <li><span className="font-medium text-gray-800">全流程设计与主题差异化输出</span>：负责 APP 每周活动从创意构思到最终切图交付的全链路设计，独立定义视觉风格与交互逻辑，确保设计与主题强关联。</li>
@@ -507,11 +520,10 @@
                                         title="企业专属文化 IP「小萤心」全链路设计与落地（周边量产 + 文化赋能）" 
                                         date="2025.10-2026.01"
                                         images={[
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+1",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+2",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+3",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+4",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+3+Image+5"
+                                            "xiaoyingxin.png",
+                                            "model.png",
+                                            "zhentou1.png",
+                                            "card.png",
                                         ]}
                                     >
                                         <li><span className="font-medium text-gray-800">IP 形象全案设计</span>：主导企业专属文化 IP「小萤心」从创意构思到视觉落地的全流程，完成 IP 形象设定、标准三视图绘制、3D 建模、骨骼绑定及动态效果制作。</li>
@@ -524,11 +536,10 @@
                                         title="游戏化疗愈装置《Nailina》" 
                                         date="2024.09-2025.03"
                                         images={[
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+1",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+2",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+3",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+4",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+4+Image+5"
+                                            "nailina1.png",
+                                            "nailina4.png",
+                                            "nailina2.png",
+                                            "nailina3.png",
                                         ]}
                                     >
                                         <li><span className="font-medium text-gray-800">交互与反馈模块</span>：基于用户行为数据设计互动机制，提供即时反馈以增强用户参与感。</li>
@@ -541,11 +552,10 @@
                                         title="独立游戏《WHERE TO STAY》" 
                                         date="2024.03-2024.07"
                                         images={[
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+1",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+2",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+3",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+4",
-                                            "https://placehold.co/600x400/e2e8f0/1e293b?text=Project+5+Image+5"
+                                            "w1.png",
+                                            "w2.png",
+                                            "w3.png",
+                                            "w4.png",
                                         ]}
                                     >
                                         <li><span className="font-medium text-gray-800">美术、动画模块</span>：骨骼设定、基础及其他动作制作，确认角色技能设计和动作融合方案，人物、场景、道具设计及资产制作。</li>
@@ -560,33 +570,27 @@
                                                 title="陆河县公共壁画公益项目"
                                                 date="2025.10"
                                                 images={[
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+1",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+2",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+3",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+4",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+1+Image+5"
+                                                    "陸河1.png",
                                                 ]}
                                             />
                                             <MiniProjectCard
                                                 title="桌游项目《OCEANIC CONSPIRACY》"
                                                 date="2024.11-2024.12"
                                                 images={[
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+1",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+2",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+3",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+4",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+2+Image+5"
+                                                    "card3.png",
+                                                    "card1.png",
+                                                    "card2.png",
+                                                    "card4.png",
                                                 ]}
                                             />
                                             <MiniProjectCard
                                                 title="UE场景《ELDERVERSE》"
                                                 date="2024.03-2024.06"
                                                 images={[
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+1",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+2",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+3",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+4",
-                                                    "https://placehold.co/600x400/e2e8f0/1e293b?text=Other+3+Image+5"
+                                                    "elder1.png",
+                                                    "elder3.png",
+                                                    "elder4.png",
+                                                    "elder2.png",
                                                 ]}
                                             />
                                             <MiniProjectCard
@@ -706,13 +710,48 @@
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                <ProjectCard title="Project One" category="UI/UX Design" color="bg-blue-500" />
-                                <ProjectCard title="Project Two" category="IP Design" color="bg-red-500" />
-                                <ProjectCard title="Project Three" category="Animation" color="bg-yellow-500" />
-                                <ProjectCard title="Project Four" category="Mobile App" color="bg-purple-500" />
-                                <ProjectCard title="Project Five" category="Branding" color="bg-green-500" />
-                                <ProjectCard title="Project Six" category="Web Design" color="bg-indigo-500" />
-                                <ProjectCard title="Project Seven" category="Concept" color="bg-pink-500" />
+                                <ProjectCard 
+                                    title="商业短片设计《Prisoners of the Cycle》" 
+                                    category="Animation / Video" 
+                                    image="" 
+                                    color="bg-blue-500" 
+                                />
+                                <ProjectCard 
+                                    title="桌游项目《OCEANIC CONSPIRACY》" 
+                                    category="Game Design" 
+                                    image="" 
+                                    color="bg-indigo-500" 
+                                />
+                                <ProjectCard 
+                                    title="《双人成行》游戏美术再设计" 
+                                    category="Game Art" 
+                                    image="" 
+                                    color="bg-purple-500" 
+                                />
+                                <ProjectCard 
+                                    title="UE场景《ELDERVERSE》" 
+                                    category="UE5 / Scene Design" 
+                                    image="" 
+                                    color="bg-pink-500" 
+                                />
+                                <ProjectCard 
+                                    title="陆河县公共壁画公益项目" 
+                                    category="Public Art" 
+                                    image="" 
+                                    color="bg-green-500" 
+                                />
+                                <ProjectCard 
+                                    title="微信上架表情包" 
+                                    category="Illustration" 
+                                    image="" 
+                                    color="bg-yellow-500" 
+                                />
+                                <ProjectCard 
+                                    title="盲盒设计《Utopia Party》" 
+                                    category="IP Design" 
+                                    image="" 
+                                    color="bg-orange-500" 
+                                />
                             </div>
                         </div>
                     </section>
