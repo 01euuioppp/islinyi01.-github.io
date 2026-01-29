@@ -28,11 +28,26 @@
                     },
                     animation: {
                         'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'blob-bounce': 'blobBounce 10s infinite ease-in-out',
+                        'blob-spin': 'blobSpin 15s infinite linear',
+                        'blob-pulse': 'blobPulse 8s infinite ease-in-out',
                     },
                     keyframes: {
                         fadeInUp: {
                             '0%': { opacity: 0, transform: 'translateY(20px)' },
                             '100%': { opacity: 1, transform: 'translateY(0)' },
+                        },
+                        blobBounce: {
+                            '0%, 100%': { transform: 'translateY(0) scale(1)' },
+                            '50%': { transform: 'translateY(-20px) scale(1.1)' },
+                        },
+                        blobSpin: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                        blobPulse: {
+                            '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
+                            '50%': { opacity: 0.6, transform: 'scale(1.2)' },
                         }
                     }
                 }
@@ -76,6 +91,23 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
         }
+        
+        /* Blob Animation */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
         .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
         .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
         .animate-float-fast { animation: float-fast 4s ease-in-out infinite; }
@@ -105,6 +137,11 @@
         );
         const Download = ({ className }) => (
              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        );
+        const Bilibili = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className={className}>
+                <path d="M17.813 4.653h.854c1.51.054 2.769.746 3.76 2.088 1.017 1.376 1.637 3.237 1.546 5.585-.061 1.583-.501 2.87-1.288 3.864-.787.993-1.896 1.609-3.237 1.802l-.654.067H5.216l-.664-.067c-1.341-.193-2.45-.809-3.237-1.802-.787-.994-1.227-2.28-1.288-3.864-.091-2.348.529-4.209 1.546-5.585.992-1.342 2.25-2.034 3.76-2.088h.854c.264-1.04.853-2.015 1.624-2.664a.835.835 0 0 1 1.08.006.842.842 0 0 1 .012 1.185 2.81 2.81 0 0 0-.962 1.473h7.94c-.4-.576-.757-1.07-1.002-1.473a.842.842 0 0 1 .012-1.185.835.835 0 0 1 1.08-.006c.771.65 1.36 1.624 1.624 2.664zM5.506 8.525c-.718.06-1.314.392-1.78.99-.482.617-.79 1.523-.883 2.703-.09 1.144.135 2.019.58 2.585.445.567.994.86 1.653.926h13.84c.66-.066 1.209-.359 1.654-.926.444-.566.67-1.441.579-2.585-.092-1.18-.4-2.086-.882-2.703-.466-.598-1.062-.93-1.78-.99H5.506zm3.014 2.455a1.277 1.277 0 1 1 0 2.555 1.277 1.277 0 0 1 0-2.555zm6.878 0a1.277 1.277 0 1 1 0 2.555 1.277 1.277 0 0 1 0-2.555z"/>
+            </svg>
         );
 
         // --- Components ---
@@ -155,7 +192,7 @@
         };
 
         const ProjectCard = ({ title, category, image, color, onClick }) => (
-            <div onClick={onClick} className="group relative aspect-[4/3] rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer">
+            <div onClick={onClick} className="group relative rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer mb-8 break-inside-avoid">
                 <div className={`absolute inset-0 ${color || 'bg-gray-100'} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
                 
                 {/* Cover Image */}
@@ -163,10 +200,10 @@
                     <img 
                         src={image} 
                         alt={title} 
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="block w-full h-auto transition-transform duration-700 group-hover:scale-105"
                     />
                 ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="aspect-[4/3] flex items-center justify-center">
                         <div className={`w-32 h-32 rounded-full ${color || 'bg-gray-200'} opacity-20 blur-3xl group-hover:scale-150 transition-transform duration-700`}></div>
                     </div>
                 )}
@@ -213,7 +250,20 @@
                         <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white z-10">
                             <div>
                                 <h3 className="text-2xl font-bold text-[#1d1d1f]">{project.title}</h3>
-                                <p className="text-sm text-gray-500 mt-1">{project.category}</p>
+                                <div className="flex items-center gap-3 mt-1">
+                                    <p className="text-sm text-gray-500">{project.category}</p>
+                                    {project.bilibiliUrl && (
+                                        <a 
+                                            href={project.bilibiliUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full text-sm font-medium"
+                                        >
+                                            <Bilibili className="w-4 h-4" />
+                                            <span>Watch Video</span>
+                                        </a>
+                                    )}
+                                </div>
                             </div>
                             <button 
                                 onClick={onClose}
@@ -257,7 +307,7 @@
 
         // --- Main App ---
 
-        const DetailedProjectCard = ({ title, date, children, images = [] }) => {
+        const DetailedProjectCard = ({ title, date, children, images = [], bilibiliUrl }) => {
             const [isHovered, setIsHovered] = useState(false);
             const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -281,24 +331,38 @@
                 >
                     <div className="flex justify-between items-start mb-2">
                         <h4 className="text-xl font-medium">{title}</h4>
-                        <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap ml-2">{date}</span>
+                        <div className="flex items-center gap-3">
+                            {bilibiliUrl && (
+                                <a 
+                                    href={bilibiliUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full"
+                                    title="Watch on Bilibili"
+                                >
+                                    <Bilibili className="w-5 h-5" />
+                                    <span className="text-sm font-medium">Watch Video</span>
+                                </a>
+                            )}
+                            <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap">{date}</span>
+                        </div>
                     </div>
                     <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
                         {children}
                     </ul>
 
                     {/* Floating Preview with Smooth Transition */}
-                    <div className={`absolute right-8 bottom-[100%] mb-4 w-96 aspect-video bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
-                        <div className="w-full h-full relative bg-gray-900 flex items-center justify-center">
+                    <div className={`absolute right-8 bottom-[100%] mb-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full relative bg-white">
                              {images.map((img, index) => (
                                 <img 
                                     key={index}
                                     src={img} 
                                     alt={`Preview ${index + 1}`} 
-                                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                                    className={`block w-full h-auto transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'relative opacity-100 z-10' : 'absolute top-0 left-0 opacity-0 z-0'}`}
                                 />
                              ))}
-                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-10">
+                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
                                 {currentImageIndex + 1}/{images.length}
                              </div>
                         </div>
@@ -308,7 +372,7 @@
             );
         };
 
-        const MiniProjectCard = ({ title, date, images = [] }) => {
+        const MiniProjectCard = ({ title, date, images = [], bilibiliUrl }) => {
             const [isHovered, setIsHovered] = useState(false);
             const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -332,21 +396,35 @@
                 >
                     <div className="flex justify-between items-start mb-1">
                         <span className="font-medium text-[#1d1d1f]">{title}</span>
-                        <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap ml-2">{date}</span>
+                        <div className="flex items-center gap-2">
+                             {bilibiliUrl && (
+                                <a 
+                                    href={bilibiliUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full"
+                                    title="Watch on Bilibili"
+                                >
+                                    <Bilibili className="w-5 h-5" />
+                                    <span className="text-xs font-medium">Video</span>
+                                </a>
+                            )}
+                            <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap">{date}</span>
+                        </div>
                     </div>
 
                     {/* Floating Preview with Smooth Transition */}
-                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-64 aspect-video bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
-                        <div className="w-full h-full relative bg-gray-900 flex items-center justify-center">
+                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-[600px] max-w-[90vw] bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full relative bg-white">
                              {images.map((img, index) => (
                                 <img 
                                     key={index}
                                     src={img} 
                                     alt={`Preview ${index + 1}`} 
-                                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                                    className={`block w-full h-auto transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'relative opacity-100 z-10' : 'absolute top-0 left-0 opacity-0 z-0'}`}
                                 />
                              ))}
-                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-10">
+                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
                                 {currentImageIndex + 1}/{images.length}
                              </div>
                         </div>
@@ -356,18 +434,220 @@
             );
         };
 
-        function App() {
-            const [selectedProject, setSelectedProject] = useState(null);
+        const Reveal = ({ children, width = "w-full", delay = 0 }) => {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = React.useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.unobserve(entry.target);
+                        }
+                    },
+                    { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+                );
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
 
             return (
-                <div className="min-h-screen font-sans selection:bg-black selection:text-white">
+                <div ref={ref} className={`${width} transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${isVisible ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-12 blur-sm'}`} style={{ transitionDelay: `${delay}ms` }}>
+                    {children}
+                </div>
+            );
+        };
+
+        const projects = [
+            {
+                title: "独立游戏《Where to stay》",
+                category: "Game Design",
+                image: "wheretostay.png",
+                color: "bg-blue-500",
+                type: "Game Art",
+                bilibiliUrl: "https://www.bilibili.com/video/BV1Mm421K7PV/", 
+                detailImages: ["where1.png", "where2.png", ""]
+            },
+            {
+                title: "交互装置《Nailina》",
+                category: "Interaction Design",
+                image: "nailina.png",
+                color: "bg-indigo-500",
+                type: "UI/UX",
+                bilibiliUrl: "https://www.bilibili.com/video/BV14iG2ztEim/", 
+                detailImages: ["nail1.png", "nail2.png", ""]
+            },
+            {
+                title: "VR游戏《ELDERVERSE》",
+                category: "VR Game Design",
+                image: "elder.png",
+                color: "bg-purple-500",
+                type: "Game Art",
+                bilibiliUrl: "",
+                detailImages: ["shiguang1.png", "shiguang2.png", ""]
+            },
+            {
+                title: "桌游《深海密谋》",
+                category: "Card Game Design",
+                image: "深海.png",
+                color: "bg-pink-500",
+                type: "Game Art",
+                bilibiliUrl: "",
+                detailImages: ["ocean1.png", "", ""]
+            },
+            {
+                title: "商业IP《小萤心》设计&营销",
+                category: "IP Design",
+                image: "",
+                color: "bg-green-500",
+                type: "Other",
+                bilibiliUrl: "",
+                detailImages: ["", "", ""]
+            },
+            {
+                title: "商业主题活动",
+                category: "Event Design",
+                image: "",
+                color: "bg-yellow-500",
+                type: "Other",
+                bilibiliUrl: "",
+                detailImages: ["", "", ""]
+            },
+            {
+                title: "海外直播平台PC端移动端设计",
+                category: "Web Design",
+                image: "",
+                color: "bg-orange-500",
+                type: "UI/UX",
+                bilibiliUrl: "",
+                detailImages: ["", "", ""]
+            }
+        ];
+
+        const AboutModal = ({ onClose }) => {
+            // Close on Escape key
+            useEffect(() => {
+                const handleEsc = (e) => {
+                    if (e.key === 'Escape') onClose();
+                };
+                window.addEventListener('keydown', handleEsc);
+                return () => window.removeEventListener('keydown', handleEsc);
+            }, [onClose]);
+
+            // Prevent scrolling when modal is open
+            useEffect(() => {
+                document.body.style.overflow = 'hidden';
+                return () => {
+                    document.body.style.overflow = 'unset';
+                };
+            }, []);
+
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-2">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity" onClick={onClose}></div>
+                    <div className="relative w-full h-full sm:w-[90vw] sm:h-[90vh] bg-white sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+                        
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white z-10">
+                            <h3 className="text-2xl font-bold text-[#1d1d1f]">关于我 About Me</h3>
+                            <button 
+                                onClick={onClose}
+                                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="overflow-y-auto bg-white p-8 md:p-12">
+                            <div className="max-w-3xl mx-auto space-y-12">
+                                {/* Intro */}
+                                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                                    <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-gray-50 shadow-lg">
+                                        <img 
+                                            src="c:\Users\server\Desktop\islinyi01\20260122-110910.jpg" 
+                                            alt="Lin Yi" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="space-y-4 text-center md:text-left">
+                                        <h2 className="text-3xl font-bold text-[#1d1d1f]">Hello! 我是林懿</h2>
+                                        <p className="text-gray-600 leading-relaxed text-lg">
+                                            一名热衷于创造有趣体验的 UI/UX 设计师。我喜欢探索技术与艺术的边界，致力于通过设计解决问题，并为用户带来愉悦的交互体验。
+                                        </p>
+                                        <p className="text-gray-600 leading-relaxed text-lg">
+                                            I am a UI/UX designer passionate about creating engaging experiences. I love exploring the boundaries between technology and art, dedicated to solving problems through design and delivering delightful interactions for users.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Philosophy / More Info */}
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">我的设计理念 Design Philosophy</h3>
+                                    <p className="text-gray-600 leading-relaxed">
+                                        我相信好的设计不仅是视觉上的美感，更是功能与情感的完美结合。在我的每一个项目中，我都试图寻找那个能够打动人心的瞬间。无论是游戏设计中的沉浸感，还是应用界面中的流畅度，我都追求极致的细节。
+                                    </p>
+                                    <p className="text-gray-600 leading-relaxed">
+                                        I believe good design is not just about visual aesthetics, but the perfect combination of function and emotion. In every project, I seek that moment that touches the heart. Whether it's immersion in game design or fluidity in app interfaces, I strive for perfection in details.
+                                    </p>
+                                </div>
+
+                                {/* Interests */}
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">兴趣爱好 Hobbies</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {['🎮 游戏 Gaming', '📷 摄影 Photography', '🎨 绘画 Painting', '✈️ 旅行 Travel', '📚 阅读 Reading', '🎵 音乐 Music'].map((hobby, i) => (
+                                            <div key={i} className="p-4 bg-gray-50 rounded-xl text-center text-gray-700 font-medium hover:bg-gray-100 transition-colors cursor-default">
+                                                {hobby}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="py-12 text-center">
+                                <p className="text-gray-400 italic">"Stay hungry, stay foolish."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        function BackgroundDecoration() {
+            return (
+                <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                    <div className="absolute top-0 right-1/4 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                    <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+                    <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                </div>
+            );
+        }
+
+        function App() {
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [filter, setFilter] = useState('All');
+            const [showAbout, setShowAbout] = useState(false);
+
+            const filteredProjects = projects.filter(p => {
+                if (filter === 'All') return true;
+                return p.type === filter;
+            });
+
+            return (
+                <div className="min-h-screen font-sans selection:bg-black selection:text-white relative">
+                    <BackgroundDecoration />
                     <ProjectDetailModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+                    {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
                     
                     {/* Navigation / Header */}
                     <nav className="fixed top-0 w-full z-50 px-6 py-4 glass-card border-b-0">
                         <div className="max-w-7xl mx-auto flex justify-between items-center">
                             <div className="text-lg font-bold tracking-tight">林懿的主页 Lin Yi's Homepage</div>
                             <div className="flex gap-4">
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => setShowAbout(true)}>关于我 About Me</Button>
                                 <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>简历 Resume</Button>
                                 <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('portfolio').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
                             </div>
@@ -560,6 +840,7 @@
                                     <DetailedProjectCard 
                                         title="海外直播PC端及移动端官网设计" 
                                         date="2025.06-2025.07"
+                                        bilibiliUrl=""
                                         images={[
                                             "./首頁1.jpg",
                                             "pay.jpg",
@@ -576,6 +857,7 @@
                                     <DetailedProjectCard 
                                         title="APP 每周主题活动 UI/UX 全流程设计与落地（高时效・提活提留存）" 
                                         date="2025.09-2026.03"
+                                        bilibiliUrl=""
                                         images={[
                                             "1.png",
                                             "2.png",
@@ -593,6 +875,7 @@
                                     <DetailedProjectCard 
                                         title="企业专属文化 IP「小萤心」全链路设计与落地（周边量产 + 文化赋能）" 
                                         date="2025.10-2026.01"
+                                        bilibiliUrl=""
                                         images={[
                                             "xiaoyingxin.png",
                                             "model.png",
@@ -609,6 +892,7 @@
                                     <DetailedProjectCard 
                                         title="游戏化疗愈装置《Nailina》" 
                                         date="2024.09-2025.03"
+                                        bilibiliUrl="https://www.bilibili.com/video/BV14iG2ztEim/"
                                         images={[
                                             "nailina1.png",
                                             "nailina4.png",
@@ -625,6 +909,7 @@
                                     <DetailedProjectCard 
                                         title="独立游戏《WHERE TO STAY》" 
                                         date="2024.03-2024.07"
+                                        bilibiliUrl="https://www.bilibili.com/video/BV1Mm421K7PV/"
                                         images={[
                                             "w1.png",
                                             "w2.png",
@@ -643,13 +928,15 @@
                                             <MiniProjectCard
                                                 title="陆河县公共壁画公益项目"
                                                 date="2025.10"
+                                                bilibiliUrl=""
                                                 images={[
-                                                    "陸河1.png",
+                                                    "luhe1.png",
                                                 ]}
                                             />
                                             <MiniProjectCard
                                                 title="桌游项目《OCEANIC CONSPIRACY》"
                                                 date="2024.11-2024.12"
+                                                bilibiliUrl=""
                                                 images={[
                                                     "card3.png",
                                                     "card1.png",
@@ -660,6 +947,7 @@
                                             <MiniProjectCard
                                                 title="UE场景《ELDERVERSE》"
                                                 date="2024.03-2024.06"
+                                                bilibiliUrl=""
                                                 images={[
                                                     "elder1.png",
                                                     "elder3.png",
@@ -670,6 +958,7 @@
                                             <MiniProjectCard
                                                 title="商业短片设计《Prisoners of the Cycle》"
                                                 date="2024.03-2024.05"
+                                                bilibiliUrl=""
                                                 images={[
                                                     "comic3.png",
                                                     "comic1.png",
@@ -679,6 +968,7 @@
                                             <MiniProjectCard
                                                 title="微信上架表情包"
                                                 date="2024"
+                                                bilibiliUrl=""
                                                 images={[
                                                     "11.png",
                                                     "22.png",
@@ -688,6 +978,7 @@
                                             <MiniProjectCard
                                                 title="《双人成行》游戏美术再设计"
                                                 date="2023.07-2023.08"
+                                                bilibiliUrl=""
                                                 images={[
                                                     "111.png",
                                                 ]}
@@ -695,6 +986,7 @@
                                             <MiniProjectCard
                                                 title="盲盒设计《Utopia Party》"
                                                 date="2023"
+                                                bilibiliUrl=""
                                                 images={[
                                                     "1111.png",
                                                 ]}
@@ -771,84 +1063,43 @@
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                <ProjectCard 
-                                    title="独立游戏《Where to stay》" 
-                                    category="Game Design" 
-                                    image="wheretostay.png" 
-                                    color="bg-blue-500"
-                                    onClick={() => setSelectedProject({
-                                        title: "独立游戏《Where to stay》",
-                                        category: "Game Design",
-                                        images: ["where1.png", "where2.png", ""]
-                                    })} 
-                                />
-                                <ProjectCard 
-                                    title="交互装置《Nailina》" 
-                                    category="Interaction Design" 
-                                    image="nailina.png" 
-                                    color="bg-indigo-500" 
-                                    onClick={() => setSelectedProject({
-                                        title: "交互装置《Nailina》",
-                                        category: "Interaction Design",
-                                        images: ["nail1.png", "nail2.png", ""]
-                                    })}
-                                />
-                                <ProjectCard 
-                                    title="VR游戏《ELDERVERSE》" 
-                                    category="VR Game Design" 
-                                    image="elder.png" 
-                                    color="bg-purple-500" 
-                                    onClick={() => setSelectedProject({
-                                        title: "VR游戏《ELDERVERSE》",
-                                        category: "VR Game Design",
-                                        images: ["shiguang1.png", "shiguang2.png", ""]
-                                    })}
-                                />
-                                <ProjectCard 
-                                    title="桌游《深海密谋》" 
-                                    category="Card Game Design" 
-                                    image="深海.png" 
-                                    color="bg-pink-500" 
-                                    onClick={() => setSelectedProject({
-                                        title: "桌游《深海密谋》",
-                                        category: "Card Game Design",
-                                        images: ["ocean1.png", "", ""]
-                                    })}
-                                />
-                                <ProjectCard 
-                                    title="商业IP《小萤心》设计&营销" 
-                                    category="IP Design" 
-                                    image="" 
-                                    color="bg-green-500" 
-                                    onClick={() => setSelectedProject({
-                                        title: "商业IP《小萤心》设计&营销",
-                                        category: "IP Design",
-                                        images: ["", "", ""]
-                                    })}
-                                />
-                                <ProjectCard 
-                                    title="商业主题活动" 
-                                    category="Event Design" 
-                                    image="" 
-                                    color="bg-yellow-500" 
-                                    onClick={() => setSelectedProject({
-                                        title: "商业主题活动",
-                                        category: "Event Design",
-                                        images: ["", "", ""]
-                                    })}
-                                />
-                                <ProjectCard 
-                                    title="海外直播平台PC端移动端设计" 
-                                    category="Web Design" 
-                                    image="" 
-                                    color="bg-orange-500" 
-                                    onClick={() => setSelectedProject({
-                                        title: "海外直播平台PC端移动端设计",
-                                        category: "Web Design",
-                                        images: ["", "", ""]
-                                    })}
-                                />
+                            {/* Filter Buttons */}
+                            <div className="flex gap-4 mb-12 overflow-x-auto pb-2">
+                                {[
+                                    { id: 'All', label: '全部' },
+                                    { id: 'UI/UX', label: 'UI/UX' },
+                                    { id: 'Game Art', label: '游戏美术' }
+                                ].map(item => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setFilter(item.id)}
+                                        className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                                            filter === item.id 
+                                            ? 'bg-[#1d1d1f] text-white shadow-md transform scale-105' 
+                                            : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                                {filteredProjects.map((project, index) => (
+                                    <ProjectCard 
+                                        key={index}
+                                        title={project.title}
+                                        category={project.category}
+                                        image={project.image}
+                                        color={project.color}
+                                        onClick={() => setSelectedProject({
+                                            title: project.title,
+                                            category: project.category,
+                                            images: project.detailImages,
+                                            bilibiliUrl: project.bilibiliUrl
+                                        })} 
+                                    />
+                                ))}
                             </div>
                         </div>
                     </section>
