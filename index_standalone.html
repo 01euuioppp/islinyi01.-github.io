@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -80,16 +80,16 @@
 
         /* Floating Animation */
         @keyframes float-slow {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0px) translateX(-50%) translateY(-50%); }
+            50% { transform: translateY(-10px) translateX(-50%) translateY(-50%); }
         }
         @keyframes float-medium {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            0%, 100% { transform: translateY(0px) translateX(-50%) translateY(-50%); }
+            50% { transform: translateY(-15px) translateX(-50%) translateY(-50%); }
         }
         @keyframes float-fast {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            0%, 100% { transform: translateY(0px) translateX(-50%) translateY(-50%); }
+            50% { transform: translateY(-8px) translateX(-50%) translateY(-50%); }
         }
         
         /* Blob Animation */
@@ -364,7 +364,7 @@
                              ))}
                              <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
                                 {currentImageIndex + 1}/{images.length}
-                             </div>
+                            </div>
                         </div>
                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-white shadow-sm"></div>
                     </div>
@@ -426,7 +426,7 @@
                              ))}
                              <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
                                 {currentImageIndex + 1}/{images.length}
-                             </div>
+                            </div>
                         </div>
                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white shadow-sm"></div>
                     </div>
@@ -484,7 +484,7 @@
                 image: "elder.png",
                 color: "bg-purple-500",
                 type: "Game Art",
-                bilibiliUrl: "",
+                bilibiliUrl: "【vr游戏 ELDERVERSE】 https://www.bilibili.com/video/BV1phQuYNELc/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775",
                 detailImages: ["shiguang1.png", "shiguang2.png", ""]
             },
             {
@@ -574,10 +574,10 @@
                                     <div className="space-y-4 text-center md:text-left">
                                         <h2 className="text-3xl font-bold text-[#1d1d1f]">Hello! 我是林懿</h2>
                                         <p className="text-gray-600 leading-relaxed text-lg">
-                                            一名热衷于创造有趣体验的 UI/UX 设计师。我喜欢探索技术与艺术的边界，致力于通过设计解决问题，并为用户带来愉悦的交互体验。
+                                            我是一名以市场和用户感受为导向的 UI/UX 设计师，同时也是 IP 设计与产品美宣领域的创意探索者。我擅长将技术与艺术深度融合，既精通 Figma、Photoshop、Illustrator 等设计工具，也熟悉 Blender、Unreal Engine 等创作引擎，更能运用 Midjourney、Stable Diffusion 等 AI 工具拓展创意边界。
                                         </p>
                                         <p className="text-gray-600 leading-relaxed text-lg">
-                                            I am a UI/UX designer passionate about creating engaging experiences. I love exploring the boundaries between technology and art, dedicated to solving problems through design and delivering delightful interactions for users.
+                                           
                                         </p>
                                     </div>
                                 </div>
@@ -586,10 +586,10 @@
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">我的设计理念 Design Philosophy</h3>
                                     <p className="text-gray-600 leading-relaxed">
-                                        我相信好的设计不仅是视觉上的美感，更是功能与情感的完美结合。在我的每一个项目中，我都试图寻找那个能够打动人心的瞬间。无论是游戏设计中的沉浸感，还是应用界面中的流畅度，我都追求极致的细节。
+                                        在设计中，我始终坚持从市场趋势和用户体验出发，用数据驱动视觉表达，让每一个界面、每一张美宣图都既能打动用户，又能为商业目标赋能。无论是打造有温度的 UI 交互，塑造有记忆点的 IP 形象，还是通过市场营销设计传递品牌价值，我都致力于创造兼具美感与商业逻辑的作品，让设计不止于好看，更能真正解决问题、连接用户。
                                     </p>
                                     <p className="text-gray-600 leading-relaxed">
-                                        I believe good design is not just about visual aesthetics, but the perfect combination of function and emotion. In every project, I seek that moment that touches the heart. Whether it's immersion in game design or fluidity in app interfaces, I strive for perfection in details.
+                                       
                                     </p>
                                 </div>
 
@@ -597,7 +597,7 @@
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">兴趣爱好 Hobbies</h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        {['🎮 游戏 Gaming', '📷 摄影 Photography', '🎨 绘画 Painting', '✈️ 旅行 Travel', '📚 阅读 Reading', '🎵 音乐 Music'].map((hobby, i) => (
+                                        {['🎮 游戏 Gaming', '📷 摄影 Photography', '🎨 绘画 Painting', '✈️ 旅行 Travel', '🛹 爬山 Hiking', '☕ 奶茶 Milktea'].map((hobby, i) => (
                                             <div key={i} className="p-4 bg-gray-50 rounded-xl text-center text-gray-700 font-medium hover:bg-gray-100 transition-colors cursor-default">
                                                 {hobby}
                                             </div>
@@ -707,7 +707,7 @@
                                 <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
                                     
                                     {/* Central Photo Placeholder */}
-                                    <div className="relative z-10 w-48 h-48 md:w-64 md:h-64 bg-white rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
+                                    <div className="relative z-10 w-40 h-40 md:w-56 md:h-56 bg-white rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
                                         {/* User: Replace src with your photo */}
                                         <img 
                                             src="c:\Users\server\Desktop\islinyi01\20260122-110910.jpg" 
@@ -716,56 +716,81 @@
                                         />
                                     </div>
 
-                                    {/* Floating Tags - Top Left Cluster */}
-                                    <div className="absolute top-[10%] left-[5%] z-20 animate-float-slow">
+                                    {/* Distributed Floating Tags - Circular Layout */}
+                                    {/* 0. Top (12 o'clock) */}
+                                    <div className="absolute top-[8%] left-[50%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0s'}}>
                                         <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🎨 UI/UX Design
-                                        </span>
-                                    </div>
-                                    <div className="absolute top-[0%] left-[40%] z-20 animate-float-medium" style={{animationDelay: '0.5s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🎮 Unity3D
+                                            🎬 视频
                                         </span>
                                     </div>
 
-                                    {/* Floating Tags - Top Right Cluster */}
-                                    <div className="absolute top-[15%] right-[5%] z-20 animate-float-fast" style={{animationDelay: '1s'}}>
+                                    {/* 1. Top Right (1 o'clock) */}
+                                    <div className="absolute top-[14.7%] left-[72.7%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0.4s'}}>
                                         <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🧊 Blender
-                                        </span>
-                                    </div>
-                                    <div className="absolute top-[40%] right-[-2%] z-20 animate-float-slow" style={{animationDelay: '1.5s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            💻 C++
+                                            🎞️ 动画
                                         </span>
                                     </div>
 
-                                    {/* Floating Tags - Bottom Right Cluster */}
-                                    <div className="absolute bottom-[20%] right-[10%] z-20 animate-float-medium" style={{animationDelay: '2s'}}>
+                                    {/* 2. Right Top (2 o'clock) */}
+                                    <div className="absolute top-[32.8%] left-[88.2%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0.8s'}}>
                                         <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🕹️ Nailina
-                                        </span>
-                                    </div>
-                                    <div className="absolute bottom-[5%] right-[35%] z-20 animate-float-fast" style={{animationDelay: '0.8s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🏠 WHERE TO STAY
+                                            🧊 建模
                                         </span>
                                     </div>
 
-                                    {/* Floating Tags - Bottom Left Cluster */}
-                                    <div className="absolute bottom-[15%] left-[5%] z-20 animate-float-slow" style={{animationDelay: '1.2s'}}>
+                                    {/* 3. Right (3 o'clock) */}
+                                    <div className="absolute top-[55.9%] left-[91.6%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '1.2s'}}>
                                         <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🌏 Overseas Live
+                                            🧸 IP设计
                                         </span>
                                     </div>
-                                    <div className="absolute bottom-[40%] left-[-2%] z-20 animate-float-medium" style={{animationDelay: '2.5s'}}>
+
+                                    {/* 4. Right Bottom (4 o'clock) */}
+                                    <div className="absolute top-[77.3%] left-[81.5%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '1.6s'}}>
                                         <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🏃 Motion Capture
+                                            📈 营销
                                         </span>
                                     </div>
-                                     <div className="absolute top-[50%] left-[80%] z-20 animate-float-fast" style={{animationDelay: '0.3s'}}>
+
+                                    {/* 5. Bottom Right (5 o'clock) */}
+                                    <div className="absolute top-[90.3%] left-[61.8%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.0s'}}>
                                         <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
-                                            🖨️ 3D Printing
+                                            🎁 周边
+                                        </span>
+                                    </div>
+
+                                    {/* 6. Bottom (6 o'clock) */}
+                                    <div className="absolute top-[90.3%] left-[38.2%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.4s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🖥️ GUI
+                                        </span>
+                                    </div>
+
+                                    {/* 7. Bottom Left (7 o'clock) */}
+                                    <div className="absolute top-[77.3%] left-[18.5%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.8s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎮 游戏策划
+                                        </span>
+                                    </div>
+
+                                    {/* 8. Left Bottom (8 o'clock) */}
+                                    <div className="absolute top-[55.9%] left-[8.4%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '3.2s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🤖 AIGC
+                                        </span>
+                                    </div>
+
+                                    {/* 9. Left (9 o'clock) */}
+                                    <div className="absolute top-[32.8%] left-[11.8%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '3.6s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            👁️ 视觉
+                                        </span>
+                                    </div>
+
+                                    {/* 10. Top Left (10 o'clock) */}
+                                    <div className="absolute top-[14.7%] left-[27.3%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '4.0s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎨 UI/UX
                                         </span>
                                     </div>
                                 </div>
@@ -836,6 +861,17 @@
                                     🚀 Projects <span className="text-sm font-normal text-gray-400 ml-2">项目经历</span>
                                 </h3>
                                 <div className="space-y-6">
+                                    {/* NDA Disclaimer - Compact */}
+                                    <div className="bg-amber-50/80 border border-amber-100 rounded-lg py-2 px-3 flex items-center gap-3 w-fit">
+                                        <div className="text-amber-500 shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        </div>
+                                        <div className="text-xs text-amber-900/80 leading-tight">
+                                            <span className="font-medium">NDA Notice: </span>
+                                            部分项目因保密协议无法展示全部细节。 Some details are omitted due to NDA.
+                                        </div>
+                                    </div>
+
                                     {/* Project 1 */}
                                     <DetailedProjectCard 
                                         title="海外直播PC端及移动端官网设计" 
@@ -947,7 +983,7 @@
                                             <MiniProjectCard
                                                 title="UE场景《ELDERVERSE》"
                                                 date="2024.03-2024.06"
-                                                bilibiliUrl=""
+                                                bilibiliUrl="【vr游戏 ELDERVERSE】 https://www.bilibili.com/video/BV1phQuYNELc/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775"
                                                 images={[
                                                     "elder1.png",
                                                     "elder3.png",
@@ -958,11 +994,12 @@
                                             <MiniProjectCard
                                                 title="商业短片设计《Prisoners of the Cycle》"
                                                 date="2024.03-2024.05"
-                                                bilibiliUrl=""
+                                                bilibiliUrl="【3d动画短片 循环的囚徒】 https://www.bilibili.com/video/BV19mQuYpEGi/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775"
                                                 images={[
                                                     "comic3.png",
                                                     "comic1.png",
                                                     "comic2.png",
+                                                    "comic3.png",
                                                 ]}
                                             />
                                             <MiniProjectCard
