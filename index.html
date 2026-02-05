@@ -286,18 +286,18 @@
                                             />
                                         ) : (
                                             <div className="w-full aspect-video bg-gray-50 flex items-center justify-center text-gray-400 border-b border-gray-100">
-                                                Image {index + 1} Placeholder
+                                                图片 {index + 1} 占位符 Image {index + 1} Placeholder
                                             </div>
                                         )}
                                     </div>
                                 ))}
                                 {(!project.images || project.images.length === 0) && (
-                                    <div className="text-center py-20 text-gray-400">No images available for this project.</div>
+                                    <div className="text-center py-20 text-gray-400">该项目暂无图片 No images available for this project.</div>
                                 )}
                             </div>
                             
                             <div className="py-8 text-center border-t border-gray-100">
-                                <p className="text-gray-500 text-sm">End of Gallery</p>
+                                <p className="text-gray-500 text-sm">到底了 End of Gallery</p>
                             </div>
                         </div>
                     </div>
@@ -662,7 +662,7 @@
                             <div className="space-y-10 animate-fade-in-up">
                                 <div className="space-y-4">
                                     <h2 className="text-xl md:text-2xl font-medium text-gray-500">
-                                        Hello, I'm
+                                        你好，我是 Hello, I'm
                                     </h2>
                                     <h1 className="text-6xl md:text-8xl font-semibold tracking-tighter text-[#1d1d1f] leading-[1.1]">
                                         林懿 <span className="text-gray-300">Lin Yi</span>
@@ -800,7 +800,7 @@
                         {/* Scroll Down Indicator */}
                         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer animate-bounce" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>
                             <div className="flex flex-col items-center gap-2 group">
-                                <span className="text-xs text-gray-400 font-medium tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Scroll Down</span>
+                                <span className="text-xs text-gray-400 font-medium tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">向下滑动 Scroll Down</span>
                                 <div className="p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 hover:bg-white transition-colors text-gray-500 group-hover:text-black">
                                     <ArrowDown className="w-6 h-6" />
                                 </div>
@@ -821,13 +821,13 @@
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
                                             <h4 className="text-xl font-medium">深圳技术大学</h4>
-                                            <p className="text-gray-500">专业：艺术与科技</p>
+                                            <p className="text-gray-500">专业：艺术与科技 Major: Art & Technology</p>
                                         </div>
                                         <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2021.09 - 2025.06</span>
                                     </div>
                                     <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
                                         <p>GPA：<span className="font-semibold text-[#1d1d1f] bg-yellow-100 px-1 rounded">3.88/4.5（专业第一）</span></p>
-                                        <p><span className="font-medium text-[#1d1d1f]">主修课程：</span>Unity3D游戏设计（95）  三维动画（95）  叙事与分镜（93） Arduino编程（92） 动画原型设计（89）数字雕塑（87）......</p>
+                                        <p><span className="font-medium text-[#1d1d1f]">主修课程 Core Courses:</span>Unity3D游戏设计（95）  三维动画（95）  叙事与分镜（93） Arduino编程（92） 动画原型设计（89）数字雕塑（87）......</p>
                                     </div>
                                 </div>
                             </div>
@@ -1095,15 +1095,15 @@
                         <div className="max-w-7xl mx-auto">
                             <div className="flex justify-between items-end mb-16">
                                 <div>
-                                    <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">Selected Works</h2>
-                                    <p className="text-xl text-gray-500">A collection of 7 projects.</p>
+                                    <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">精选作品 Selected Works</h2>
+                                    <p className="text-xl text-gray-500">7个精选项目 A collection of 7 projects.</p>
                                 </div>
                             </div>
 
                             {/* Filter Buttons */}
                             <div className="flex gap-4 mb-12 overflow-x-auto pb-2">
                                 {[
-                                    { id: 'All', label: '全部' },
+                                    { id: 'All', label: '全部 All' },
                                     { id: 'UI/UX', label: 'UI/UX' },
                                     { id: 'Game Art', label: '游戏美术' }
                                 ].map(item => (
@@ -1143,8 +1143,8 @@
 
                     {/* Footer */}
                     <footer className="py-12 px-6 text-center text-gray-500 text-sm border-t border-gray-100">
-                        <p>© 2026 Lin Yi. All rights reserved.</p>
-                        <p className="mt-2">Designed with simplicity.</p>
+                        <p>© 2026 林懿 Lin Yi. 版权所有 All rights reserved.</p>
+                        <p className="mt-2">极简设计 Designed with simplicity.</p>
                     </footer>
                 </div>
             );
