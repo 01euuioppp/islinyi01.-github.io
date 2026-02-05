@@ -325,6 +325,1161 @@
 
             return (
                 <div 
+                    className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative group"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-xl font-medium">{title}</h4>
+                        <div className="flex items-center gap-3">
+                            {bilibiliUrl && (
+                                <a 
+                                href={bilibiliUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full"
+                                title="Watch on Bilibili"
+                            >
+                                <Bilibili className="w-5 h-5" />
+                                <span className="text-sm font-medium">观看视频 Watch Video</span>
+                            </a>
+                            )}
+                            <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap">{date}</span>
+                        </div>
+                    </div>
+                    <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
+                        {children}
+                    </ul>
+
+                    {/* Floating Preview with Smooth Transition */}
+                    <div className={`absolute right-8 bottom-[100%] mb-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full relative bg-white">
+                             {images.map((img, index) => (
+                                <img 
+                                    key={index}
+                                    src={img} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className={`block w-full h-auto transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'relative opacity-100 z-10' : 'absolute top-0 left-0 opacity-0 z-0'}`}
+                                />
+                             ))}
+                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
+                                {currentImageIndex + 1}/{images.length}
+                            </div>
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-white shadow-sm"></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const MiniProjectCard = ({ title, date, images = [], bilibiliUrl }) => {
+            const [isHovered, setIsHovered] = useState(false);
+            const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+            useEffect(() => {
+                let interval;
+                if (isHovered && images.length > 0) {
+                    interval = setInterval(() => {
+                        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+                    }, 1500);
+                } else {
+                    setCurrentImageIndex(0);
+                }
+                return () => clearInterval(interval);
+            }, [isHovered, images]);
+
+            return (
+                <div 
+                    className="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors relative group"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className="flex justify-between items-start mb-1">
+                        <span className="font-medium text-[#1d1d1f]">{title}</span>
+                        <div className="flex items-center gap-2">
+                             {bilibiliUrl && (
+                                <a 
+                                    href={bilibiliUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full"
+                                    title="Watch on Bilibili"
+                                >
+                                    <Bilibili className="w-5 h-5" />
+                                    <span className="text-xs font-medium">视频 Video</span>
+                                </a>
+                            )}
+                            <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap">{date}</span>
+                        </div>
+                    </div>
+
+                    {/* Floating Preview with Smooth Transition */}
+                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-[600px] max-w-[90vw] bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+                        <div className="w-full relative bg-white">
+                             {images.map((img, index) => (
+                                <img 
+                                    key={index}
+                                    src={img} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className={`block w-full h-auto transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'relative opacity-100 z-10' : 'absolute top-0 left-0 opacity-0 z-0'}`}
+                                />
+                             ))}
+                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
+                                {currentImageIndex + 1}/{images.length}
+                            </div>
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white shadow-sm"></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Reveal = ({ children, width = "w-full", delay = 0 }) => {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = React.useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.unobserve(entry.target);
+                        }
+                    },
+                    { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+                );
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+
+            return (
+                <div ref={ref} className={`${width} transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${isVisible ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-12 blur-sm'}`} style={{ transitionDelay: `${delay}ms` }}>
+                    {children}
+                </div>
+            );
+        };
+
+        const projects = [
+            {
+                title: "独立游戏《Where to stay》",
+                category: "Game Design",
+                image: "wheretostay.png",
+                color: "bg-blue-500",
+                type: "Game Art",
+                bilibiliUrl: "https://www.bilibili.com/video/BV1Mm421K7PV/", 
+                detailImages: ["where1.png", "where2.png", ""]
+            },
+            {
+                title: "交互装置《Nailina》",
+                category: "Interaction Design",
+                image: "nailina.png",
+                color: "bg-indigo-500",
+                type: "UI/UX",
+                bilibiliUrl: "https://www.bilibili.com/video/BV14iG2ztEim/", 
+                detailImages: ["nail1.png", "nail2.png", ""]
+            },
+            {
+                title: "VR游戏《ELDERVERSE》",
+                category: "VR Game Design",
+                image: "elder.png",
+                color: "bg-purple-500",
+                type: "Game Art",
+                bilibiliUrl: "【vr游戏 ELDERVERSE】 https://www.bilibili.com/video/BV1phQuYNELc/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775",
+                detailImages: ["shiguang1.png", "shiguang2.png", ""]
+            },
+            {
+                title: "桌游《深海密谋》",
+                category: "Card Game Design",
+                image: "深海.png",
+                color: "bg-pink-500",
+                type: "Game Art",
+                bilibiliUrl: "",
+                detailImages: ["ocean1.png", "", ""]
+            },
+            {
+                title: "商业IP《小萤心》设计&营销",
+                category: "IP Design",
+                image: "",
+                color: "bg-green-500",
+                type: "Other",
+                bilibiliUrl: "",
+                detailImages: ["", "", ""]
+            },
+            {
+                title: "商业主题活动",
+                category: "Event Design",
+                image: "",
+                color: "bg-yellow-500",
+                type: "Other",
+                bilibiliUrl: "",
+                detailImages: ["", "", ""]
+            },
+            {
+                title: "海外直播平台PC端移动端设计",
+                category: "Web Design",
+                image: "",
+                color: "bg-orange-500",
+                type: "UI/UX",
+                bilibiliUrl: "",
+                detailImages: ["", "", ""]
+            }
+        ];
+
+        const AboutModal = ({ onClose }) => {
+            // Close on Escape key
+            useEffect(() => {
+                const handleEsc = (e) => {
+                    if (e.key === 'Escape') onClose();
+                };
+                window.addEventListener('keydown', handleEsc);
+                return () => window.removeEventListener('keydown', handleEsc);
+            }, [onClose]);
+
+            // Prevent scrolling when modal is open
+            useEffect(() => {
+                document.body.style.overflow = 'hidden';
+                return () => {
+                    document.body.style.overflow = 'unset';
+                };
+            }, []);
+
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-2">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity" onClick={onClose}></div>
+                    <div className="relative w-full h-full sm:w-[90vw] sm:h-[90vh] bg-white sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+                        
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white z-10">
+                            <h3 className="text-2xl font-bold text-[#1d1d1f]">关于我 About Me</h3>
+                            <button 
+                                onClick={onClose}
+                                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="overflow-y-auto bg-white p-8 md:p-12">
+                            <div className="max-w-3xl mx-auto space-y-12">
+                                {/* Intro */}
+                                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                                    <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-gray-50 shadow-lg">
+                                        <img 
+                                            src="./20260122-110910.jpg" 
+                                            alt="Lin Yi" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="space-y-4 text-center md:text-left">
+                                        <h2 className="text-3xl font-bold text-[#1d1d1f]">Hello! 我是林懿</h2>
+                                        <p className="text-gray-600 leading-relaxed text-lg">
+                                            我是一名以市场和用户感受为导向的 UI/UX 设计师，同时也是 IP 设计与产品美宣领域的创意探索者。我擅长将技术与艺术深度融合，既精通 Figma、Photoshop、Illustrator 等设计工具，也熟悉 Blender、Unreal Engine 等创作引擎，更能运用 Midjourney、Stable Diffusion 等 AI 工具拓展创意边界。
+                                        </p>
+                                        <p className="text-gray-600 leading-relaxed text-lg">
+                                           
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Philosophy / More Info */}
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">我的设计理念 Design Philosophy</h3>
+                                    <p className="text-gray-600 leading-relaxed">
+                                        在设计中，我始终坚持从市场趋势和用户体验出发，用数据驱动视觉表达，让每一个界面、每一张美宣图都既能打动用户，又能为商业目标赋能。无论是打造有温度的 UI 交互，塑造有记忆点的 IP 形象，还是通过市场营销设计传递品牌价值，我都致力于创造兼具美感与商业逻辑的作品，让设计不止于好看，更能真正解决问题、连接用户。
+                                    </p>
+                                    <p className="text-gray-600 leading-relaxed">
+                                       
+                                    </p>
+                                </div>
+
+                                {/* Interests */}
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">兴趣爱好 Hobbies</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {['🎮 游戏 Gaming', '📷 摄影 Photography', '🎨 绘画 Painting', '✈️ 旅行 Travel', '🛹 爬山 Hiking', '☕ 奶茶 Milktea'].map((hobby, i) => (
+                                            <div key={i} className="p-4 bg-gray-50 rounded-xl text-center text-gray-700 font-medium hover:bg-gray-100 transition-colors cursor-default">
+                                                {hobby}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="py-12 text-center">
+                                <p className="text-gray-400 italic">"Stay hungry, stay foolish."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        function BackgroundDecoration() {
+            return (
+                <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                    <div className="absolute top-0 right-1/4 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                    <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+                    <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                </div>
+            );
+        }
+
+        function App() {
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [filter, setFilter] = useState('All');
+            const [showAbout, setShowAbout] = useState(false);
+
+            const filteredProjects = projects.filter(p => {
+                if (filter === 'All') return true;
+                return p.type === filter;
+            });
+
+            return (
+                <div className="min-h-screen font-sans selection:bg-black selection:text-white relative">
+                    <BackgroundDecoration />
+                    <ProjectDetailModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+                    {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+                    
+                    {/* Navigation / Header */}
+                    <nav className="fixed top-0 w-full z-50 px-6 py-4 glass-card border-b-0">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <div className="text-lg font-bold tracking-tight">林懿的主页 Lin Yi's Homepage</div>
+                            <div className="flex gap-4">
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => setShowAbout(true)}>关于我 About Me</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>简历 Resume</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('portfolio').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <main className="relative pt-32 pb-20 px-6">
+                        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[70vh]">
+                            
+                            {/* Text Content */}
+                            <div className="space-y-10 animate-fade-in-up">
+                                <div className="space-y-4">
+                                    <h2 className="text-xl md:text-2xl font-medium text-gray-500">
+                                        你好，我是 Hello, I'm
+                                    </h2>
+                                    <h1 className="text-6xl md:text-8xl font-semibold tracking-tighter text-[#1d1d1f] leading-[1.1]">
+                                        林懿 <span className="text-gray-300">Lin Yi</span>
+                                    </h1>
+                                    <div className="h-1 w-20 bg-[#1d1d1f] rounded-full mt-6"></div>
+                                </div>
+
+                                <div className="text-2xl md:text-3xl font-light leading-snug text-gray-600 max-w-xl">
+                                    <span className="text-[#1d1d1f] font-medium">UI/UX 设计师</span> 专注于 IP 设计与视频动画。
+                                    <p className="text-base text-gray-500 mt-2 font-normal">
+                                        UI/UX Designer specializing in IP Design & Video Animation.
+                                    </p>
+                                </div>
+
+                                {/* Contact Section with Hover Effects */}
+                                <div className="flex items-center gap-8 pt-4">
+                                    <ContactItem 
+                                        icon={<MessageCircle className="w-6 h-6" />} 
+                                        label="微信 WeChat" 
+                                        value="Happy628_01" 
+                                    />
+                                    <ContactItem 
+                                        icon={<Phone className="w-6 h-6" />} 
+                                        label="电话 Phone" 
+                                        value="16620939434" 
+                                    />
+                                    <ContactItem 
+                                        icon={<Mail className="w-6 h-6" />} 
+                                        label="邮箱 Email" 
+                                        value="islinyi01@163.com" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Visual / Abstract Element (Photo & Floating Tags) */}
+                            <div className="relative flex justify-center items-center h-[500px] lg:h-auto animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                                {/* Soft Ambient Background */}
+                                <div className="absolute top-0 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-pulse"></div>
+                                <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-pulse" style={{animationDelay: '1s'}}></div>
+                                
+                                {/* Container for Photo and Tags */}
+                                <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
+                                    
+                                    {/* Central Photo Placeholder */}
+                                    <div className="relative z-10 w-40 h-40 md:w-56 md:h-56 bg-white rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
+                                        {/* User: Replace src with your photo */}
+                                        <img 
+                                            src="./20260122-110910.jpg" 
+                                            alt="Lin Yi" 
+                                            className="w-full h-full object-cover bg-gray-50"
+                                        />
+                                    </div>
+
+                                    {/* Distributed Floating Tags - Circular Layout */}
+                                    {/* 0. Top (12 o'clock) */}
+                                    <div className="absolute top-[8%] left-[50%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎬 视频
+                                        </span>
+                                    </div>
+
+                                    {/* 1. Top Right (1 o'clock) */}
+                                    <div className="absolute top-[14.7%] left-[72.7%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0.4s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎞️ 动画
+                                        </span>
+                                    </div>
+
+                                    {/* 2. Right Top (2 o'clock) */}
+                                    <div className="absolute top-[32.8%] left-[88.2%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0.8s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🧊 建模
+                                        </span>
+                                    </div>
+
+                                    {/* 3. Right (3 o'clock) */}
+                                    <div className="absolute top-[55.9%] left-[91.6%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '1.2s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🧸 IP设计
+                                        </span>
+                                    </div>
+
+                                    {/* 4. Right Bottom (4 o'clock) */}
+                                    <div className="absolute top-[77.3%] left-[81.5%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '1.6s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            📈 营销
+                                        </span>
+                                    </div>
+
+                                    {/* 5. Bottom Right (5 o'clock) */}
+                                    <div className="absolute top-[90.3%] left-[61.8%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.0s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎁 周边
+                                        </span>
+                                    </div>
+
+                                    {/* 6. Bottom (6 o'clock) */}
+                                    <div className="absolute top-[90.3%] left-[38.2%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.4s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🖥️ GUI
+                                        </span>
+                                    </div>
+
+                                    {/* 7. Bottom Left (7 o'clock) */}
+                                    <div className="absolute top-[77.3%] left-[18.5%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.8s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎮 游戏策划
+                                        </span>
+                                    </div>
+
+                                    {/* 8. Left Bottom (8 o'clock) */}
+                                    <div className="absolute top-[55.9%] left-[8.4%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '3.2s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🤖 AIGC
+                                        </span>
+                                    </div>
+
+                                    {/* 9. Left (9 o'clock) */}
+                                    <div className="absolute top-[32.8%] left-[11.8%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '3.6s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            👁️ 视觉
+                                        </span>
+                                    </div>
+
+                                    {/* 10. Top Left (10 o'clock) */}
+                                    <div className="absolute top-[14.7%] left-[27.3%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '4.0s'}}>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                            🎨 UI/UX
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Scroll Down Indicator */}
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer animate-bounce" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>
+                            <div className="flex flex-col items-center gap-2 group">
+                                <span className="text-xs text-gray-400 font-medium tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">向下滑动 Scroll Down</span>
+                                <div className="p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 hover:bg-white transition-colors text-gray-500 group-hover:text-black">
+                                    <ArrowDown className="w-6 h-6" />
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Detailed Resume Sections */}
+                    <section id="resume" className="py-24 px-6 bg-[#f5f5f7]">
+                        <div className="max-w-4xl mx-auto space-y-16">
+                            
+                            {/* Education */}
+                            <div className="space-y-6">
+                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
+                                🎓 教育经历 <span className="text-sm font-normal text-gray-400 ml-2">Education</span>
+                            </h3>
+                                <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div>
+                                            <h4 className="text-xl font-medium">深圳技术大学</h4>
+                                            <p className="text-gray-500">专业：艺术与科技 Major: Art & Technology</p>
+                                        </div>
+                                        <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2021.09 - 2025.06</span>
+                                    </div>
+                                    <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
+                                        <p>GPA：<span className="font-semibold text-[#1d1d1f] bg-yellow-100 px-1 rounded">3.88/4.5（专业第一）</span></p>
+                                        <p><span className="font-medium text-[#1d1d1f]">主修课程 Core Courses:</span>Unity3D游戏设计（95）  三维动画（95）  叙事与分镜（93） Arduino编程（92） 动画原型设计（89）数字雕塑（87）......</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Work & Internship */}
+                            <div className="space-y-6">
+                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
+                                💼 工作经历 <span className="text-sm font-normal text-gray-400 ml-2">Experience</span>
+                            </h3>
+                                <div className="space-y-6">
+                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h4 className="text-xl font-medium">压寨网络有限公司</h4>
+                                                <p className="text-gray-500">职位：美术设计师 Art Designer</p>
+                                            </div>
+                                            <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2025.06 - 至今</span>
+                                        </div>
+                                        <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
+                                            <li><span className="font-medium text-gray-800">独立完成直播活动视觉设计</span>：负责网页、Banner、礼物、座驾、特效等内容，注重互动体验与视觉情绪传达，具备<span className="font-medium text-gray-800">游戏化思维</span>，曾参与虚拟角色或场景设计，提升用户沉浸感与参与度。</li>
+                                            <li><span className="font-medium text-gray-800">参与App线上线下推广设计</span>：涵盖宣传图、启动页、动效视频等，掌握<span className="font-medium text-gray-800">多终端适配规范（iOS/Android）</span>，具备从视觉到交互的综合设计能力。</li>
+                                            <li><span className="font-medium text-gray-800">游戏UI与虚拟角色设计</span>：擅长多风格绘制与创意表达，能够根据产品定位与用户偏好，打造富有吸引力的视觉内容与虚拟道具形象。</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Project Experience */}
+                            <div className="space-y-6">
+                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
+                                🚀 项目经历 <span className="text-sm font-normal text-gray-400 ml-2">Projects</span>
+                            </h3>
+                                <div className="space-y-6">
+                                    {/* NDA Disclaimer - Compact */}
+                                    <div className="bg-amber-50/80 border border-amber-100 rounded-lg py-2 px-3 flex items-center gap-3 w-fit">
+                                        <div className="text-amber-500 shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        </div>
+                                        <div className="text-xs text-amber-900/80 leading-tight">
+                                            <span className="font-medium">保密协议 NDA Notice: </span>
+                                            部分项目因保密协议无法展示全部细节。 Some details are omitted due to NDA.
+                                        </div>
+                                    </div>
+
+                                    {/* Project 1 */}
+                                    <DetailedProjectCard 
+                                        title="海外直播PC端及移动端官网设计" 
+                                        date="2025.06-2025.07"
+                                        bilibiliUrl=""
+                                        images={[
+                                            "./首頁1.jpg",
+                                            "pay.jpg",
+                                            "together.jpg",
+                                            "login.jpg",
+                                            "back.jpg"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">视觉与交互设计</span>：依据品牌风格及原型图，完成官网 PC 端、移动端约十五个主页面的美术设计，结合直播平台特性，设计<span className="font-medium text-gray-800">独特交互逻辑与辨识度动效</span>。</li>
+                                        <li><span className="font-medium text-gray-800">资源交付与项目落地</span>：完成所有设计图的规范切图，整理完整设计资源包并交付前端、后端开发团队，<span className="font-medium text-gray-800">协助解决落地问题，推动官网顺利上线</span>。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 2 */}
+                                    <DetailedProjectCard 
+                                        title="APP 每周主题活动 UI/UX 全流程设计与落地（高时效・提活提留存）" 
+                                        date="2025.09-2026.03"
+                                        bilibiliUrl=""
+                                        images={[
+                                            "1.png",
+                                            "2.png",
+                                            "3.png",
+                                            "4.png",
+                                            "5.png"
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">全流程设计与主题差异化输出</span>：负责 APP 每周活动从创意构思到最终切图交付的全链路设计，独立定义视觉风格与交互逻辑，确保设计与主题强关联。</li>
+                                        <li><span className="font-medium text-gray-800">高时效项目管控</span>：建立标准化设计流程，在<span className="font-medium text-gray-800">2-3 天 / 期</span>的紧凑周期内完成全环节，保障每期活动按时上线，零延期。</li>
+                                        <li><span className="font-medium text-gray-800">体验优化与业务价值转化</span>：通过优化活动入口视觉吸引力、弹窗交互流畅度、动效表现力，<span className="font-medium text-gray-800">有效提升用户点击参与意愿</span>，助力平台活跃率与留存率显著提升。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 3 */}
+                                    <DetailedProjectCard 
+                                        title="企业专属文化 IP「小萤心」全链路设计与落地（周边量产 + 文化赋能）" 
+                                        date="2025.10-2026.01"
+                                        bilibiliUrl=""
+                                        images={[
+                                            "xiaoyingxin.png",
+                                            "model.png",
+                                            "zhentou1.png",
+                                            "card.png",
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">IP 形象全案设计</span>：主导企业专属文化 IP「小萤心」从创意构思到视觉落地的全流程，完成 IP 形象设定、标准三视图绘制、3D 建模、骨骼绑定及动态效果制作。</li>
+                                        <li><span className="font-medium text-gray-800">衍生周边设计与量产对接</span>：基于 IP 形象设计全套周边产品，负责对接工厂进行打样、工艺确认与量产跟进，把控产品质量与交付时效。</li>
+                                        <li><span className="font-medium text-gray-800">文化赋能与品牌传播落地</span>：借助 IP 及周边的场景化应用，有效输出企业文化理念，提升核心用户的品牌认同感与归属感。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 4 */}
+                                    <DetailedProjectCard 
+                                        title="游戏化疗愈装置《Nailina》" 
+                                        date="2024.09-2025.03"
+                                        bilibiliUrl="https://www.bilibili.com/video/BV14iG2ztEim/"
+                                        images={[
+                                            "nailina1.png",
+                                            "nailina4.png",
+                                            "nailina2.png",
+                                            "nailina3.png",
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">交互与反馈模块</span>：基于用户行为数据设计互动机制，提供即时反馈以增强用户参与感。</li>
+                                        <li><span className="font-medium text-gray-800">美术设计</span>：设计角色、场景、交互界面及装饰元素、界面UI/UX设计。</li>
+                                        <li><span className="font-medium text-gray-800">游戏机制与玩法设计</span>：制定核心游戏玩法，包括角色成长系统、任务挑战机制、社交互动。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Project 5 */}
+                                    <DetailedProjectCard 
+                                        title="独立游戏《WHERE TO STAY》" 
+                                        date="2024.03-2024.07"
+                                        bilibiliUrl="https://www.bilibili.com/video/BV1Mm421K7PV/"
+                                        images={[
+                                            "w1.png",
+                                            "w2.png",
+                                            "w3.png",
+                                            "w4.png",
+                                        ]}
+                                    >
+                                        <li><span className="font-medium text-gray-800">美术、动画模块</span>：骨骼设定、基础及其他动作制作，确认角色技能设计和动作融合方案，人物、场景、道具设计及资产制作。</li>
+                                        <li><span className="font-medium text-gray-800">游戏及编程模块</span>：整体剧情、关卡设计和规则制定，实现游戏核心功能，包括玩家操作、游戏逻辑、界面交互。</li>
+                                    </DetailedProjectCard>
+
+                                    {/* Other Projects Overview */}
+                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                        <h4 className="text-xl font-medium mb-4">📂 其他项目概览 <span className="text-sm font-normal text-gray-400 ml-2">Other Projects</span></h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <MiniProjectCard
+                                                title="陆河县公共壁画公益项目"
+                                                date="2025.10"
+                                                bilibiliUrl=""
+                                                images={[
+                                                    "luhe1.png",
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="桌游项目《OCEANIC CONSPIRACY》"
+                                                date="2024.11-2024.12"
+                                                bilibiliUrl=""
+                                                images={[
+                                                    "card3.png",
+                                                    "card1.png",
+                                                    "card2.png",
+                                                    "card4.png",
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="UE场景《ELDERVERSE》"
+                                                date="2024.03-2024.06"
+                                                bilibiliUrl="【vr游戏 ELDERVERSE】 https://www.bilibili.com/video/BV1phQuYNELc/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775"
+                                                images={[
+                                                    "elder1.png",
+                                                    "elder3.png",
+                                                    "elder4.png",
+                                                    "elder2.png",
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="商业短片设计《Prisoners of the Cycle》"
+                                                date="2024.03-2024.05"
+                                                bilibiliUrl="【3d动画短片 循环的囚徒】 https://www.bilibili.com/video/BV19mQuYpEGi/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775"
+                                                images={[
+                                                    "comic3.png",
+                                                    "comic1.png",
+                                                    "comic2.png",
+                                                    "comic3.png",
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="微信上架表情包"
+                                                date="2024"
+                                                bilibiliUrl=""
+                                                images={[
+                                                    "11.png",
+                                                    "22.png",
+                                                    "33.png",
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="《双人成行》游戏美术再设计"
+                                                date="2023.07-2023.08"
+                                                bilibiliUrl=""
+                                                images={[
+                                                    "111.png",
+                                                ]}
+                                            />
+                                            <MiniProjectCard
+                                                title="盲盒设计《Utopia Party》"
+                                                date="2023"
+                                                bilibiliUrl=""
+                                                images={[
+                                                    "1111.png",
+                                                ]}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Awards & Skills Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
+                                        🏆 获奖信息 <span className="text-sm font-normal text-gray-400 ml-2">Awards</span>
+                                    </h3>
+                                    <div className="bg-white p-8 rounded-3xl shadow-sm h-full">
+                                        <ul className="space-y-6">
+                                            {[
+                                                { name: "NCDA 未来设计师数字艺术设计大赛 艺术疗愈", award: "一等奖" },
+                                                { name: "NCDA 未来设计师数字艺术设计大赛 交互设计", award: "二等奖" },
+                                                { name: "NCDA 未来设计师数字艺术设计大赛 造型艺术", award: "三等奖" },
+                                                { name: "华灿两岸新锐设计竞赛·华灿奖", award: "三等奖" },
+                                                { name: "当代国际艺术与设计双年展·GSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才作品收藏" },
+                                                { name: "当代国际艺术与设计双年展·GSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才奖" }
+                                            ].map((item, index) => (
+                                                <li key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                                    <span className="font-medium text-[#1d1d1f] mb-1 sm:mb-0 pr-4 leading-snug">{item.name}</span>
+                                                    <span className="text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 rounded whitespace-nowrap self-start sm:self-auto mt-1 sm:mt-0">{item.award}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
+                                        🛠 技能 <span className="text-sm font-normal text-gray-400 ml-2">Skills</span>
+                                    </h3>
+                                    <div className="bg-white p-8 rounded-3xl shadow-sm h-full">
+                                        <div className="mb-8">
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">软件与技术 Software & Tech</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['Blender', 'Zbrush', 'After Effect', 'Figma', '蓝湖', 'Unity', 'Spine', 'Sai', 'CAD', 'Midjourney', 'Stable Diffusion', 'Photoshop', 'illustrator', '即梦/可灵', 'Unreal Engine', 'Substance Painter', 'Arduino', 'C++'].map(skill => (
+                                                    <span key={skill} className="px-3 py-1.5 bg-[#f5f5f7] text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">艺术与工具 Artistic & Tools</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['动捕设备', '表情包', '逐帧动画', '相机', '3D打印机', '激光切割机', '泥塑', '国画', '水彩', '铅笔画', '粘土'].map(skill => (
+                                                    <span key={skill} className="px-3 py-1.5 bg-[#f5f5f7] text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* Portfolio / Selected Works Section */}
+                    <section id="portfolio" className="py-24 px-6 bg-[#f5f5f7]">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="flex justify-between items-end mb-16">
+                                <div>
+                                    <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">精选作品 Selected Works</h2>
+                                    <p className="text-xl text-gray-500">7个精选项目 A collection of 7 projects.</p>
+                                </div>
+                            </div>
+
+                            {/* Filter Buttons */}
+                            <div className="flex gap-4 mb-12 overflow-x-auto pb-2">
+                                {[
+                                    { id: 'All', label: '全部 All' },
+                                    { id: 'UI/UX', label: 'UI/UX' },
+                                    { id: 'Game Art', label: '游戏美术' }
+                                ].map(item => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setFilter(item.id)}
+                                        className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                                            filter === item.id 
+                                            ? 'bg-[#1d1d1f] text-white shadow-md transform scale-105' 
+                                            : 'bg-white text-gray-500 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                                {filteredProjects.map((project, index) => (
+                                    <ProjectCard 
+                                        key={index}
+                                        title={project.title}
+                                        category={project.category}
+                                        image={project.image}
+                                        color={project.color}
+                                        onClick={() => setSelectedProject({
+                                            title: project.title,
+                                            category: project.category,
+                                            images: project.detailImages,
+                                            bilibiliUrl: project.bilibiliUrl
+                                        })} 
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="py-12 px-6 text-center text-gray-500 text-sm border-t border-gray-100">
+                        <p>© 2026 林懿 Lin Yi. 版权所有 All rights reserved.</p>
+                        <p className="mt-2">极简设计 Designed with simplicity.</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>林懿 Lin Yi - Portfolio</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'apple-gray': '#f5f5f7',
+                        'apple-dark': '#1d1d1f',
+                        'apple-blue': '#0071e3',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'blob-bounce': 'blobBounce 10s infinite ease-in-out',
+                        'blob-spin': 'blobSpin 15s infinite linear',
+                        'blob-pulse': 'blobPulse 8s infinite ease-in-out',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        },
+                        blobBounce: {
+                            '0%, 100%': { transform: 'translateY(0) scale(1)' },
+                            '50%': { transform: 'translateY(-20px) scale(1.1)' },
+                        },
+                        blobSpin: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                        blobPulse: {
+                            '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
+                            '50%': { opacity: 0.6, transform: 'scale(1.2)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .hover-trigger .hover-target {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .hover-trigger:hover .hover-target {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Floating Animation */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px) translateX(-50%) translateY(-50%); }
+            50% { transform: translateY(-10px) translateX(-50%) translateY(-50%); }
+        }
+        @keyframes float-medium {
+            0%, 100% { transform: translateY(0px) translateX(-50%) translateY(-50%); }
+            50% { transform: translateY(-15px) translateX(-50%) translateY(-50%); }
+        }
+        @keyframes float-fast {
+            0%, 100% { transform: translateY(0px) translateX(-50%) translateY(-50%); }
+            50% { transform: translateY(-8px) translateX(-50%) translateY(-50%); }
+        }
+        
+        /* Blob Animation */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+        .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
+        .animate-float-fast { animation: float-fast 4s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-[#f5f5f7] text-[#1d1d1f]">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons ---
+        const Phone = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.05 12.05 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.05 12.05 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        );
+        const Mail = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        );
+        const MessageCircle = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+        );
+        const ArrowRight = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        );
+        const ArrowDown = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+        );
+        const Download = ({ className }) => (
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        );
+        const Bilibili = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className={className}>
+                <path d="M17.813 4.653h.854c1.51.054 2.769.746 3.76 2.088 1.017 1.376 1.637 3.237 1.546 5.585-.061 1.583-.501 2.87-1.288 3.864-.787.993-1.896 1.609-3.237 1.802l-.654.067H5.216l-.664-.067c-1.341-.193-2.45-.809-3.237-1.802-.787-.994-1.227-2.28-1.288-3.864-.091-2.348.529-4.209 1.546-5.585.992-1.342 2.25-2.034 3.76-2.088h.854c.264-1.04.853-2.015 1.624-2.664a.835.835 0 0 1 1.08.006.842.842 0 0 1 .012 1.185 2.81 2.81 0 0 0-.962 1.473h7.94c-.4-.576-.757-1.07-1.002-1.473a.842.842 0 0 1 .012-1.185.835.835 0 0 1 1.08-.006c.771.65 1.36 1.624 1.624 2.664zM5.506 8.525c-.718.06-1.314.392-1.78.99-.482.617-.79 1.523-.883 2.703-.09 1.144.135 2.019.58 2.585.445.567.994.86 1.653.926h13.84c.66-.066 1.209-.359 1.654-.926.444-.566.67-1.441.579-2.585-.092-1.18-.4-2.086-.882-2.703-.466-.598-1.062-.93-1.78-.99H5.506zm3.014 2.455a1.277 1.277 0 1 1 0 2.555 1.277 1.277 0 0 1 0-2.555zm6.878 0a1.277 1.277 0 1 1 0 2.555 1.277 1.277 0 0 1 0-2.555z"/>
+            </svg>
+        );
+
+        // --- Components ---
+        
+        const Button = ({ children, variant = 'primary', className = '', ...props }) => {
+            const baseStyles = "inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 transform active:scale-95";
+            const variants = {
+                primary: "bg-[#1d1d1f] text-white hover:bg-[#333]",
+                secondary: "bg-white text-[#1d1d1f] border border-gray-200 hover:border-gray-400 shadow-sm",
+                ghost: "text-[#1d1d1f] hover:bg-gray-100",
+            };
+            
+            return (
+                <button className={`${baseStyles} ${variants[variant]} ${className}`} {...props}>
+                    {children}
+                </button>
+            );
+        };
+
+        const ContactItem = ({ icon, label, value, colorClass = "bg-black" }) => {
+            const [copied, setCopied] = useState(false);
+
+            const handleCopy = () => {
+                navigator.clipboard.writeText(value).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                });
+            };
+
+            return (
+                <div 
+                    className="hover-trigger relative flex flex-col items-center justify-center group"
+                    onClick={handleCopy}
+                >
+                    <div className={`p-4 rounded-full bg-white shadow-sm border border-gray-100 text-[#1d1d1f] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md cursor-pointer active:scale-95`}>
+                        {icon}
+                    </div>
+                    <div className="hover-target absolute top-full mt-3 px-4 py-2 bg-[#1d1d1f]/90 backdrop-blur-md text-white text-sm rounded-xl shadow-xl whitespace-nowrap z-50 flex flex-col items-center min-w-[100px]">
+                        <span className="text-xs text-gray-400 mb-0.5">{label}</span>
+                        <span className={`font-medium tracking-wide transition-colors duration-300 ${copied ? 'text-green-400' : 'text-white'}`}>
+                            {copied ? '已复制 Copied!' : value}
+                        </span>
+                        {/* Little triangle arrow */}
+                        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#1d1d1f]/90 rotate-45"></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ProjectCard = ({ title, category, image, color, onClick }) => (
+            <div onClick={onClick} className="group relative rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer mb-8 break-inside-avoid">
+                <div className={`absolute inset-0 ${color || 'bg-gray-100'} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                
+                {/* Cover Image */}
+                {image ? (
+                    <img 
+                        src={image} 
+                        alt={title} 
+                        className="block w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="aspect-[4/3] flex items-center justify-center">
+                        <div className={`w-32 h-32 rounded-full ${color || 'bg-gray-200'} opacity-20 blur-3xl group-hover:scale-150 transition-transform duration-700`}></div>
+                    </div>
+                )}
+
+                {/* Overlay Gradient for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+
+                <div className="absolute bottom-0 left-0 p-8 w-full">
+                    <p className="text-sm font-semibold text-white/80 mb-1 uppercase tracking-wider">{category}</p>
+                    <h3 className="text-2xl font-bold text-white group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
+                        {title}
+                        <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-white" />
+                    </h3>
+                </div>
+            </div>
+        );
+
+        const ProjectDetailModal = ({ project, onClose }) => {
+            if (!project) return null;
+
+            // Close on Escape key
+            useEffect(() => {
+                const handleEsc = (e) => {
+                    if (e.key === 'Escape') onClose();
+                };
+                window.addEventListener('keydown', handleEsc);
+                return () => window.removeEventListener('keydown', handleEsc);
+            }, [onClose]);
+
+            // Prevent scrolling when modal is open
+            useEffect(() => {
+                document.body.style.overflow = 'hidden';
+                return () => {
+                    document.body.style.overflow = 'unset';
+                };
+            }, []);
+
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-2">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity" onClick={onClose}></div>
+                    <div className="relative w-full h-full sm:w-[99vw] sm:h-[98vh] bg-white sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+                        
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white z-10">
+                            <div>
+                                <h3 className="text-2xl font-bold text-[#1d1d1f]">{project.title}</h3>
+                                <div className="flex items-center gap-3 mt-1">
+                                    <p className="text-sm text-gray-500">{project.category}</p>
+                                    {project.bilibiliUrl && (
+                                        <a 
+                                        href={project.bilibiliUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full text-sm font-medium"
+                                    >
+                                        <Bilibili className="w-4 h-4" />
+                                        <span>观看视频 Watch Video</span>
+                                    </a>
+                                    )}
+                                </div>
+                            </div>
+                            <button 
+                                onClick={onClose}
+                                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+
+                        {/* Content - Scrollable */}
+                        <div className="overflow-y-auto bg-white">
+                            <div className="flex flex-col">
+                                {project.images && project.images.map((img, index) => (
+                                    <div key={index} className="w-full">
+                                        {img ? (
+                                            <img 
+                                                src={img} 
+                                                alt={`Detail ${index + 1}`} 
+                                                className="w-full h-auto block"
+                                            />
+                                        ) : (
+                                            <div className="w-full aspect-video bg-gray-50 flex items-center justify-center text-gray-400 border-b border-gray-100">
+                                                图片 {index + 1} 占位符 Image {index + 1} Placeholder
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                                {(!project.images || project.images.length === 0) && (
+                                    <div className="text-center py-20 text-gray-400">该项目暂无图片 No images available for this project.</div>
+                                )}
+                            </div>
+                            
+                            <div className="py-8 text-center border-t border-gray-100">
+                                <p className="text-gray-500 text-sm">到底了 End of Gallery</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App ---
+
+        const DetailedProjectCard = ({ title, date, children, images = [], bilibiliUrl }) => {
+            const [isHovered, setIsHovered] = useState(false);
+            const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+            useEffect(() => {
+                let interval;
+                if (isHovered && images.length > 0) {
+                    interval = setInterval(() => {
+                        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+                    }, 1500);
+                } else {
+                    setCurrentImageIndex(0);
+                }
+                return () => clearInterval(interval);
+            }, [isHovered, images]);
+
+            return (
+                <div 
                     className="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 relative group"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
