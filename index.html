@@ -325,7 +325,7 @@
 
             return (
                 <div 
-                    className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative group"
+                    className="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 relative group"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
@@ -390,7 +390,7 @@
 
             return (
                 <div 
-                    className="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors relative group"
+                    className="p-4 rounded-xl bg-white/50 border border-white/50 hover:bg-white/80 transition-all duration-300 relative group backdrop-blur-sm"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
@@ -809,42 +809,44 @@
                     </main>
 
                     {/* Detailed Resume Sections */}
-                    <section id="resume" className="py-20 px-6 bg-[#f5f5f7]">
+                    <section id="resume" className="py-20 px-6 relative z-10">
                         <div className="max-w-4xl mx-auto space-y-16">
                             
                             {/* Education */}
-                            <div className="space-y-6">
-                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
-                                🎓 教育经历 <span className="text-sm font-normal text-gray-400 ml-2">Education</span>
-                            </h3>
-                                <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <h4 className="text-xl font-medium">深圳技术大学</h4>
-                                            <p className="text-gray-500">专业：艺术与科技 Major: Art & Technology</p>
+                            <Reveal>
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+                                        🎓 教育经历 <span className="text-sm font-normal text-gray-500 ml-2">Education</span>
+                                    </h3>
+                                    <div className="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h4 className="text-xl font-medium">深圳技术大学</h4>
+                                                <p className="text-gray-500">专业：艺术与科技 Major: Art & Technology</p>
+                                            </div>
+                                            <span className="text-sm text-gray-500 bg-white/50 px-3 py-1 rounded-full backdrop-blur-sm">2021.09 - 2025.06</span>
                                         </div>
-                                        <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2021.09 - 2025.06</span>
-                                    </div>
-                                    <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
-                                        <p>GPA：<span className="font-semibold text-[#1d1d1f] bg-yellow-100 px-1 rounded">3.88/4.5（专业第一）</span></p>
-                                        <p><span className="font-medium text-[#1d1d1f]">主修课程 Core Courses:</span>Unity3D游戏设计（95）  三维动画（95）  叙事与分镜（93） Arduino编程（92） 动画原型设计（89）数字雕塑（87）......</p>
+                                        <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
+                                            <p>GPA：<span className="font-semibold text-[#1d1d1f] bg-yellow-100/50 px-1 rounded">3.88/4.5（专业第一）</span></p>
+                                            <p><span className="font-medium text-[#1d1d1f]">主修课程 Core Courses:</span>Unity3D游戏设计（95）  三维动画（95）  叙事与分镜（93） Arduino编程（92） 动画原型设计（89）数字雕塑（87）......</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Reveal>
 
                             {/* Work & Internship */}
-                            <div className="space-y-6">
-                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
-                                💼 工作经历 <span className="text-sm font-normal text-gray-400 ml-2">Experience</span>
-                            </h3>
+                            <Reveal delay={200}>
                                 <div className="space-y-6">
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                    <h3 className="text-2xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+                                        💼 工作经历 <span className="text-sm font-normal text-gray-500 ml-2">Experience</span>
+                                    </h3>
+                                    <div className="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300">
                                         <div className="flex justify-between items-start mb-2">
                                             <div>
                                                 <h4 className="text-xl font-medium">压寨网络有限公司</h4>
                                                 <p className="text-gray-500">职位：美术设计师 Art Designer</p>
                                             </div>
-                                            <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2025.06 - 至今</span>
+                                            <span className="text-sm text-gray-500 bg-white/50 px-3 py-1 rounded-full backdrop-blur-sm">2025.06 - 至今</span>
                                         </div>
                                         <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
                                             <li><span className="font-medium text-gray-800">独立完成直播活动视觉设计</span>：负责网页、Banner、礼物、座驾、特效等内容，注重互动体验与视觉情绪传达，具备<span className="font-medium text-gray-800">游戏化思维</span>，曾参与虚拟角色或场景设计，提升用户沉浸感与参与度。</li>
@@ -853,14 +855,15 @@
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
+                            </Reveal>
 
                             {/* Project Experience */}
-                            <div className="space-y-6">
-                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
-                                🚀 项目经历 <span className="text-sm font-normal text-gray-400 ml-2">Projects</span>
-                            </h3>
+                            <Reveal delay={400}>
                                 <div className="space-y-6">
+                                    <h3 className="text-2xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+                                        🚀 项目经历 <span className="text-sm font-normal text-gray-500 ml-2">Projects</span>
+                                    </h3>
+                                    <div className="space-y-6">
                                     {/* NDA Disclaimer - Compact */}
                                     <div className="bg-amber-50/80 border border-amber-100 rounded-lg py-2 px-3 flex items-center gap-3 w-fit">
                                         <div className="text-amber-500 shrink-0">
@@ -958,7 +961,7 @@
                                     </DetailedProjectCard>
 
                                     {/* Other Projects Overview */}
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="glass-card p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
                                         <h4 className="text-xl font-medium mb-4">📂 其他项目概览 <span className="text-sm font-normal text-gray-400 ml-2">Other Projects</span></h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <MiniProjectCard
@@ -1031,16 +1034,18 @@
                                         </div>
                                     </div>
                                 </div>
+                            </Reveal>
                             </div>
 
                             {/* Awards & Skills Grid */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div className="space-y-6">
-                                    <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
-                                        🏆 获奖信息 <span className="text-sm font-normal text-gray-400 ml-2">Awards</span>
-                                    </h3>
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm h-full">
-                                        <ul className="space-y-6">
+                            <Reveal delay={600}>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <div className="space-y-6">
+                                        <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
+                                            🏆 获奖信息 <span className="text-sm font-normal text-gray-400 ml-2">Awards</span>
+                                        </h3>
+                                        <div className="glass-card p-8 rounded-3xl shadow-sm h-full">
+                                            <ul className="space-y-6">
                                             {[
                                                 { name: "NCDA 未来设计师数字艺术设计大赛 艺术疗愈", award: "一等奖" },
                                                 { name: "NCDA 未来设计师数字艺术设计大赛 交互设计", award: "二等奖" },
@@ -1084,9 +1089,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    </div>
                                 </div>
-                            </div>
-
+                            </Reveal>
                         </div>
                     </section>
 
