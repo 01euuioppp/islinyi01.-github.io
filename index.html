@@ -1,17 +1,54 @@
-﻿<!DOCTYPE html>
-<!-- Updated: 2026-02-05 Trigger Rebuild -->
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>林懿 Lin Yi - Portfolio</title>
     
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script>
+        // Global Error Handler
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '0';
+            errorDiv.style.left = '0';
+            errorDiv.style.width = '100%';
+            errorDiv.style.backgroundColor = 'red';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '20px';
+            errorDiv.style.zIndex = '9999';
+            errorDiv.style.fontFamily = 'monospace';
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}<br><strong>Source:</strong> ${source}:${lineno}:${colno}`;
+            document.body.appendChild(errorDiv);
+        };
+        
+        window.onload = function() {
+            setTimeout(function() {
+                if (!window.React || !window.ReactDOM || !window.Babel) {
+                    const msg = "Libraries failed to load. Please check your network connection (VPN needed?) or CDN availability.";
+                    console.error(msg);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.position = 'fixed';
+                    errorDiv.style.bottom = '0';
+                    errorDiv.style.left = '0';
+                    errorDiv.style.width = '100%';
+                    errorDiv.style.backgroundColor = 'orange';
+                    errorDiv.style.color = 'black';
+                    errorDiv.style.padding = '20px';
+                    errorDiv.style.zIndex = '9999';
+                    errorDiv.innerText = msg + " Missing: " + (!window.React?"React ":"") + (!window.ReactDOM?"ReactDOM ":"") + (!window.Babel?"Babel ":"");
+                    document.body.appendChild(errorDiv);
+                }
+            }, 3000);
+        };
+    </script>
+
+    <!-- React & ReactDOM (BootCDN - Stable in China) -->
+    <script crossorigin src="https://cdn.bootcdn.net/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://cdn.bootcdn.net/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
     
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Babel for JSX (BootCDN - Babel 7) -->
+    <script crossorigin src="https://cdn.bootcdn.net/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -276,9 +313,18 @@
 
                         {/* Content - Scrollable */}
                         <div className="overflow-y-auto bg-white">
-                            <div className="flex flex-col">
+                            {/* Description Section */}
+                            {project.description && (
+                                <div className="p-8 max-w-4xl mx-auto border-b border-gray-100">
+                                     <div className="space-y-4 text-gray-600 leading-relaxed text-lg">
+                                        {project.description}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex flex-col space-y-4 bg-gray-50 p-4 sm:p-8">
                                 {project.images && project.images.map((img, index) => (
-                                    <div key={index} className="w-full">
+                                    <div key={index} className="w-full shadow-sm rounded-lg overflow-hidden">
                                         {img ? (
                                             <img 
                                                 src={img} 
@@ -306,134 +352,68 @@
             );
         };
 
+        // Duplicate GridProjectCard removed
+
+
         // --- Main App ---
 
-        const DetailedProjectCard = ({ title, date, children, images = [], bilibiliUrl }) => {
-            const [isHovered, setIsHovered] = useState(false);
-            const [currentImageIndex, setCurrentImageIndex] = useState(0);
+        // DetailedProjectCard removed (Unused)
 
-            useEffect(() => {
-                let interval;
-                if (isHovered && images.length > 0) {
-                    interval = setInterval(() => {
-                        setCurrentImageIndex((prev) => (prev + 1) % images.length);
-                    }, 1500);
-                } else {
-                    setCurrentImageIndex(0);
-                }
-                return () => clearInterval(interval);
-            }, [isHovered, images]);
+// UnifiedProjectCard defined below
+
+        const GridProjectCard = ({ project, onClick }) => {
+            if (!project) return null;
+            // Robust checks
+            const title = project.title || 'Untitled';
+            const date = project.date || '';
+            const category = project.category ? project.category.split('/')[0] : 'Project';
+            const hasImages = Array.isArray(project.images) && project.images.length > 0;
+            const coverImage = hasImages ? project.images[0] : null;
 
             return (
                 <div 
-                    className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative group"
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
+                    className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100 flex flex-col h-full"
+                    onClick={onClick}
                 >
-                    <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-xl font-medium">{title}</h4>
-                        <div className="flex items-center gap-3">
-                            {bilibiliUrl && (
-                                <a 
-                                href={bilibiliUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full"
-                                title="Watch on Bilibili"
-                            >
-                                <Bilibili className="w-5 h-5" />
-                                <span className="text-sm font-medium">观看视频 Watch Video</span>
-                            </a>
-                            )}
-                            <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap">{date}</span>
+                    {/* Image Aspect Ratio Container */}
+                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 relative">
+                        {coverImage ? (
+                            <img 
+                                src={coverImage} 
+                                alt={title} 
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                onError={(e) => {e.target.style.display = 'none';}}
+                            />
+                        ) : (
+                             <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>
+                        )}
+                        
+                        {/* Overlay on hover */}
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span className="bg-white/90 backdrop-blur text-sm font-medium px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
+                                查看详情 View Details
+                            </span>
                         </div>
                     </div>
-                    <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
-                        {children}
-                    </ul>
 
-                    {/* Floating Preview with Smooth Transition */}
-                    <div className={`absolute right-8 bottom-[100%] mb-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
-                        <div className="w-full relative bg-white">
-                             {images.map((img, index) => (
-                                <img 
-                                    key={index}
-                                    src={img} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className={`block w-full h-auto transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'relative opacity-100 z-10' : 'absolute top-0 left-0 opacity-0 z-0'}`}
-                                />
-                             ))}
-                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
-                                {currentImageIndex + 1}/{images.length}
-                            </div>
+                    {/* Content */}
+                    <div className="p-6 flex flex-col flex-grow">
+                        <div className="flex justify-between items-start mb-3">
+                            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md uppercase tracking-wide">{category}</span>
+                            <span className="text-xs text-gray-400 font-medium">{date}</span>
                         </div>
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-white shadow-sm"></div>
+                        <h3 className="text-xl font-bold text-[#1d1d1f] group-hover:text-blue-600 transition-colors line-clamp-2 mb-2">{title}</h3>
+                        <p className="text-sm text-gray-500 line-clamp-2 mt-auto">
+                            点击查看更多详情... Click to view details...
+                        </p>
                     </div>
                 </div>
             );
         };
 
-        const MiniProjectCard = ({ title, date, images = [], bilibiliUrl }) => {
-            const [isHovered, setIsHovered] = useState(false);
-            const [currentImageIndex, setCurrentImageIndex] = useState(0);
+        // UnifiedProjectCard removed (Unused)
 
-            useEffect(() => {
-                let interval;
-                if (isHovered && images.length > 0) {
-                    interval = setInterval(() => {
-                        setCurrentImageIndex((prev) => (prev + 1) % images.length);
-                    }, 1500);
-                } else {
-                    setCurrentImageIndex(0);
-                }
-                return () => clearInterval(interval);
-            }, [isHovered, images]);
-
-            return (
-                <div 
-                    className="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors relative group"
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                >
-                    <div className="flex justify-between items-start mb-1">
-                        <span className="font-medium text-[#1d1d1f]">{title}</span>
-                        <div className="flex items-center gap-2">
-                             {bilibiliUrl && (
-                                <a 
-                                    href={bilibiliUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full"
-                                    title="Watch on Bilibili"
-                                >
-                                    <Bilibili className="w-5 h-5" />
-                                    <span className="text-xs font-medium">视频 Video</span>
-                                </a>
-                            )}
-                            <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap">{date}</span>
-                        </div>
-                    </div>
-
-                    {/* Floating Preview with Smooth Transition */}
-                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-[100%] mb-3 w-[600px] max-w-[90vw] bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 hidden md:block transition-all duration-300 ease-in-out transform origin-bottom ${isHovered && images.length > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
-                        <div className="w-full relative bg-white">
-                             {images.map((img, index) => (
-                                <img 
-                                    key={index}
-                                    src={img} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className={`block w-full h-auto transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'relative opacity-100 z-10' : 'absolute top-0 left-0 opacity-0 z-0'}`}
-                                />
-                             ))}
-                             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-medium z-20">
-                                {currentImageIndex + 1}/{images.length}
-                            </div>
-                        </div>
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white shadow-sm"></div>
-                    </div>
-                </div>
-            );
-        };
+        // MiniProjectCard removed (Unused)
 
         const Reveal = ({ children, width = "w-full", delay = 0 }) => {
             const [isVisible, setIsVisible] = useState(false);
@@ -462,67 +442,125 @@
 
         const projects = [
             {
-                title: "独立游戏《Where to stay》",
-                category: "Game Design",
-                image: "wheretostay.png",
-                color: "bg-blue-500",
-                type: "Game Art",
-                bilibiliUrl: "https://www.bilibili.com/video/BV1Mm421K7PV/", 
-                detailImages: ["where1.png", "where2.png", ""]
+                title: "海外直播PC端及移动端官网设计",
+                category: "Web Design / UI/UX",
+                date: "2025.06-2025.07",
+                images: ["./首頁1.jpg", "pay.jpg", "together.jpg", "login.jpg", "back.jpg"],
+                description: (
+                    <>
+                        <p className="mb-4"><span className="font-medium text-gray-800">视觉与交互设计</span>：依据品牌风格及原型图，完成官网 PC 端、移动端约十五个主页面的美术设计，结合直播平台特性，设计<span className="font-medium text-gray-800">独特交互逻辑与辨识度动效</span>。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">资源交付与项目落地</span>：完成所有设计图的规范切图，整理完整设计资源包并交付前端、后端开发团队，<span className="font-medium text-gray-800">协助解决落地问题，推动官网顺利上线</span>。</p>
+                    </>
+                ),
+                type: "UI/UX"
             },
             {
-                title: "交互装置《Nailina》",
-                category: "Interaction Design",
-                image: "nailina.png",
-                color: "bg-indigo-500",
-                type: "UI/UX",
-                bilibiliUrl: "https://www.bilibili.com/video/BV14iG2ztEim/", 
-                detailImages: ["nail1.png", "nail2.png", ""]
+                title: "APP 每周主题活动 UI/UX 全流程设计",
+                category: "Mobile App / Event Design",
+                date: "2025.09-2026.03",
+                images: ["1.png", "2.png", "3.png", "4.png", "5.png"],
+                description: (
+                    <>
+                        <p className="mb-4"><span className="font-medium text-gray-800">全流程设计与主题差异化输出</span>：负责 APP 每周活动从创意构思到最终切图交付的全链路设计，独立定义视觉风格与交互逻辑，确保设计与主题强关联。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">高时效项目管控</span>：建立标准化设计流程，在<span className="font-medium text-gray-800">2-3 天 / 期</span>的紧凑周期内完成全环节，保障每期活动按时上线，零延期。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">体验优化与业务价值转化</span>：通过优化活动入口视觉吸引力、弹窗交互流畅度、动效表现力，<span className="font-medium text-gray-800">有效提升用户点击参与意愿</span>，助力平台活跃率与留存率显著提升。</p>
+                    </>
+                ),
+                type: "UI/UX"
             },
             {
-                title: "VR游戏《ELDERVERSE》",
-                category: "VR Game Design",
-                image: "elder.png",
-                color: "bg-purple-500",
-                type: "Game Art",
-                bilibiliUrl: "【vr游戏 ELDERVERSE】 https://www.bilibili.com/video/BV1phQuYNELc/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775",
-                detailImages: ["shiguang1.png", "shiguang2.png", ""]
+                title: "企业专属文化 IP「小萤心」全链路设计",
+                category: "IP Design / 3D Modeling",
+                date: "2025.10-2026.01",
+                images: ["xiaoyingxin.png", "model.png", "zhentou1.png", "card.png"],
+                description: (
+                    <>
+                        <p className="mb-4"><span className="font-medium text-gray-800">IP 形象全案设计</span>：主导企业专属文化 IP「小萤心」从创意构思到视觉落地的全流程，完成 IP 形象设定、标准三视图绘制、3D 建模、骨骼绑定及动态效果制作。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">衍生周边设计与量产对接</span>：基于 IP 形象设计全套周边产品，负责对接工厂进行打样、工艺确认与量产跟进，把控产品质量与交付时效。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">文化赋能与品牌传播落地</span>：借助 IP 及周边的场景化应用，有效输出企业文化理念，提升核心用户的品牌认同感与归属感。</p>
+                    </>
+                ),
+                type: "Other"
             },
             {
-                title: "桌游《深海密谋》",
-                category: "Card Game Design",
-                image: "深海.png",
-                color: "bg-pink-500",
-                type: "Game Art",
-                bilibiliUrl: "",
-                detailImages: ["ocean1.png", "", ""]
+                title: "游戏化疗愈装置《Nailina》",
+                category: "Interaction Design / Game Art",
+                date: "2024.09-2025.03",
+                bilibiliUrl: "https://www.bilibili.com/video/BV14iG2ztEim/",
+                images: ["nailina1.png", "nailina4.png", "nailina2.png", "nailina3.png"],
+                description: (
+                    <>
+                        <p className="mb-4"><span className="font-medium text-gray-800">交互与反馈模块</span>：基于用户行为数据设计互动机制，提供即时反馈以增强用户参与感。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">美术设计</span>：设计角色、场景、交互界面及装饰元素、界面UI/UX设计。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">游戏机制与玩法设计</span>：制定核心游戏玩法，包括角色成长系统、任务挑战机制、社交互动。</p>
+                    </>
+                ),
+                type: "Game Art"
             },
             {
-                title: "商业IP《小萤心》设计&营销",
-                category: "IP Design",
-                image: "",
-                color: "bg-green-500",
-                type: "Other",
-                bilibiliUrl: "",
-                detailImages: ["", "", ""]
+                title: "独立游戏《WHERE TO STAY》",
+                category: "Indie Game / Game Design",
+                date: "2024.03-2024.07",
+                bilibiliUrl: "https://www.bilibili.com/video/BV1Mm421K7PV/",
+                images: ["w1.png", "w2.png", "w3.png", "w4.png"],
+                description: (
+                    <>
+                        <p className="mb-4"><span className="font-medium text-gray-800">美术、动画模块</span>：骨骼设定、基础及其他动作制作，确认角色技能设计和动作融合方案，人物、场景、道具设计及资产制作。</p>
+                        <p className="mb-4"><span className="font-medium text-gray-800">游戏及编程模块</span>：整体剧情、关卡设计和规则制定，实现游戏核心功能，包括玩家操作、游戏逻辑、界面交互。</p>
+                    </>
+                ),
+                type: "Game Art"
             },
             {
-                title: "商业主题活动",
-                category: "Event Design",
-                image: "",
-                color: "bg-yellow-500",
-                type: "Other",
-                bilibiliUrl: "",
-                detailImages: ["", "", ""]
+                title: "陆河县公共壁画公益项目",
+                category: "Public Art / Mural",
+                date: "2025.10",
+                images: ["luhe1.png"],
+                type: "Other"
             },
             {
-                title: "海外直播平台PC端移动端设计",
-                category: "Web Design",
-                image: "",
-                color: "bg-orange-500",
-                type: "UI/UX",
-                bilibiliUrl: "",
-                detailImages: ["", "", ""]
+                title: "桌游项目《OCEANIC CONSPIRACY》",
+                category: "Board Game Design",
+                date: "2024.11-2024.12",
+                images: ["card3.png", "card1.png", "card2.png", "card4.png"],
+                type: "Game Art"
+            },
+            {
+                title: "UE场景《ELDERVERSE》",
+                category: "UE5 / Scene Design",
+                date: "2024.03-2024.06",
+                bilibiliUrl: "https://www.bilibili.com/video/BV1phQuYNELc/",
+                images: ["elder1.png", "elder3.png", "elder4.png", "elder2.png"],
+                type: "3D"
+            },
+            {
+                title: "商业短片设计《Prisoners of the Cycle》",
+                category: "Animation / Commercial",
+                date: "2024.03-2024.05",
+                bilibiliUrl: "https://www.bilibili.com/video/BV19mQuYpEGi/",
+                images: ["comic3.png", "comic1.png", "comic2.png"],
+                type: "Animation"
+            },
+            {
+                title: "微信上架表情包",
+                category: "Illustration / Sticker",
+                date: "2024",
+                images: ["11.png", "22.png", "33.png"],
+                type: "UI/UX"
+            },
+            {
+                title: "《双人成行》游戏美术再设计",
+                category: "Game Art Redesign",
+                date: "2023.07-2023.08",
+                images: ["111.png"],
+                type: "Game Art"
+            },
+            {
+                title: "盲盒设计《Utopia Party》",
+                category: "Product Design / Toy",
+                date: "2023",
+                images: ["1111.png"],
+                type: "Other"
             }
         ];
 
@@ -665,7 +703,7 @@
                             <div className="flex gap-4">
                                 <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => setShowAbout(true)}>关于我 About Me</Button>
                                 <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>简历 Resume</Button>
-                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('portfolio').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('projects').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
                             </div>
                         </div>
                     </nav>
@@ -687,19 +725,15 @@
                                 </div>
 
                                 <div className="text-2xl md:text-3xl font-light leading-snug text-gray-600 max-w-xl">
-                                    <div className="flex flex-wrap items-center gap-x-4 text-[#1d1d1f]">
-                                        <span className="font-medium">UI/UX 设计</span>
-                                        <span className="text-gray-300 font-light text-xl">|</span>
-                                        <span className="font-medium">IP 设计</span>
-                                        <span className="text-gray-300 font-light text-xl">|</span>
-                                        <span className="font-medium">视频动画</span>
+                                    <div className="flex flex-wrap items-center gap-3 text-[#1d1d1f]">
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-full font-medium text-sm border border-gray-100 shadow-sm">UI/UX 设计</span>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-full font-medium text-sm border border-gray-100 shadow-sm">IP 设计</span>
+                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-full font-medium text-sm border border-gray-100 shadow-sm">视频动画</span>
                                     </div>
-                                    <div className="text-base text-gray-500 mt-3 font-normal flex flex-wrap items-center gap-x-3">
-                                        <span>UI/UX Design</span>
-                                        <span className="text-gray-300 text-[10px] align-middle">●</span>
-                                        <span>IP Design</span>
-                                        <span className="text-gray-300 text-[10px] align-middle">●</span>
-                                        <span>Video Animation</span>
+                                    <div className="text-sm text-gray-500 mt-4 font-normal flex flex-wrap items-center gap-x-6">
+                                        <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>UI/UX Design</span>
+                                        <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>IP Design</span>
+                                        <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400"></span>Video Animation</span>
                                     </div>
                                 </div>
 
@@ -857,10 +891,10 @@
                                             <span className="font-medium text-[#1d1d1f] block mb-3">主修课程 Core Courses</span>
                                             <div className="flex flex-wrap gap-2">
                                                 {[
-                                                    { name: 'Unity3D游戏设计', grade: 'A+' },
-                                                    { name: '三维动画', grade: 'A+' },
-                                                    { name: '叙事与分镜', grade: 'A+' },
-                                                    { name: 'Arduino编程', grade: 'A+' },
+                                                    { name: 'Unity3D游戏设计', grade: 'A' },
+                                                    { name: '三维动画', grade: 'A' },
+                                                    { name: '叙事与分镜', grade: 'A' },
+                                                    { name: 'Arduino编程', grade: 'A' },
                                                     { name: '动画原型设计', grade: 'A' },
                                                     { name: '数字雕塑', grade: 'A' },
                                                 ].map((course, index) => (
@@ -956,233 +990,37 @@
 
 
 
-{/* Project Experience */}
-                            <div className="space-y-6 pt-24">
-                                <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
-                                🚀 项目经历 <span className="text-sm font-normal text-gray-400 ml-2">Projects</span>
-                            </h3>
-                                <div className="space-y-6">
-                                    {/* NDA Disclaimer - Compact */}
-                                    <div className="bg-amber-50/80 border border-amber-100 rounded-lg py-2 px-3 flex items-center gap-3 w-fit">
-                                        <div className="text-amber-500 shrink-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                                        </div>
-                                        <div className="text-xs text-amber-900/80 leading-tight">
-                                            <span className="font-medium">保密协议 NDA Notice: </span>
-                                            部分项目因保密协议无法展示全部细节。 Some details are omitted due to NDA.
-                                        </div>
-                                    </div>
 
-                                    {/* Project 1 */}
-                                    <DetailedProjectCard 
-                                        title="海外直播PC端及移动端官网设计" 
-                                        date="2025.06-2025.07"
-                                        bilibiliUrl=""
-                                        images={[
-                                            "./首頁1.jpg",
-                                            "pay.jpg",
-                                            "together.jpg",
-                                            "login.jpg",
-                                            "back.jpg"
-                                        ]}
-                                    >
-                                        <li><span className="font-medium text-gray-800">视觉与交互设计</span>：依据品牌风格及原型图，完成官网 PC 端、移动端约十五个主页面的美术设计，结合直播平台特性，设计<span className="font-medium text-gray-800">独特交互逻辑与辨识度动效</span>。</li>
-                                        <li><span className="font-medium text-gray-800">资源交付与项目落地</span>：完成所有设计图的规范切图，整理完整设计资源包并交付前端、后端开发团队，<span className="font-medium text-gray-800">协助解决落地问题，推动官网顺利上线</span>。</li>
-                                    </DetailedProjectCard>
 
-                                    {/* Project 2 */}
-                                    <DetailedProjectCard 
-                                        title="APP 每周主题活动 UI/UX 全流程设计与落地（高时效・提活提留存）" 
-                                        date="2025.09-2026.03"
-                                        bilibiliUrl=""
-                                        images={[
-                                            "1.png",
-                                            "2.png",
-                                            "3.png",
-                                            "4.png",
-                                            "5.png"
-                                        ]}
-                                    >
-                                        <li><span className="font-medium text-gray-800">全流程设计与主题差异化输出</span>：负责 APP 每周活动从创意构思到最终切图交付的全链路设计，独立定义视觉风格与交互逻辑，确保设计与主题强关联。</li>
-                                        <li><span className="font-medium text-gray-800">高时效项目管控</span>：建立标准化设计流程，在<span className="font-medium text-gray-800">2-3 天 / 期</span>的紧凑周期内完成全环节，保障每期活动按时上线，零延期。</li>
-                                        <li><span className="font-medium text-gray-800">体验优化与业务价值转化</span>：通过优化活动入口视觉吸引力、弹窗交互流畅度、动效表现力，<span className="font-medium text-gray-800">有效提升用户点击参与意愿</span>，助力平台活跃率与留存率显著提升。</li>
-                                    </DetailedProjectCard>
 
-                                    {/* Project 3 */}
-                                    <DetailedProjectCard 
-                                        title="企业专属文化 IP「小萤心」全链路设计与落地（周边量产 + 文化赋能）" 
-                                        date="2025.10-2026.01"
-                                        bilibiliUrl=""
-                                        images={[
-                                            "xiaoyingxin.png",
-                                            "model.png",
-                                            "zhentou1.png",
-                                            "card.png",
-                                        ]}
-                                    >
-                                        <li><span className="font-medium text-gray-800">IP 形象全案设计</span>：主导企业专属文化 IP「小萤心」从创意构思到视觉落地的全流程，完成 IP 形象设定、标准三视图绘制、3D 建模、骨骼绑定及动态效果制作。</li>
-                                        <li><span className="font-medium text-gray-800">衍生周边设计与量产对接</span>：基于 IP 形象设计全套周边产品，负责对接工厂进行打样、工艺确认与量产跟进，把控产品质量与交付时效。</li>
-                                        <li><span className="font-medium text-gray-800">文化赋能与品牌传播落地</span>：借助 IP 及周边的场景化应用，有效输出企业文化理念，提升核心用户的品牌认同感与归属感。</li>
-                                    </DetailedProjectCard>
-
-                                    {/* Project 4 */}
-                                    <DetailedProjectCard 
-                                        title="游戏化疗愈装置《Nailina》" 
-                                        date="2024.09-2025.03"
-                                        bilibiliUrl="https://www.bilibili.com/video/BV14iG2ztEim/"
-                                        images={[
-                                            "nailina1.png",
-                                            "nailina4.png",
-                                            "nailina2.png",
-                                            "nailina3.png",
-                                        ]}
-                                    >
-                                        <li><span className="font-medium text-gray-800">交互与反馈模块</span>：基于用户行为数据设计互动机制，提供即时反馈以增强用户参与感。</li>
-                                        <li><span className="font-medium text-gray-800">美术设计</span>：设计角色、场景、交互界面及装饰元素、界面UI/UX设计。</li>
-                                        <li><span className="font-medium text-gray-800">游戏机制与玩法设计</span>：制定核心游戏玩法，包括角色成长系统、任务挑战机制、社交互动。</li>
-                                    </DetailedProjectCard>
-
-                                    {/* Project 5 */}
-                                    <DetailedProjectCard 
-                                        title="独立游戏《WHERE TO STAY》" 
-                                        date="2024.03-2024.07"
-                                        bilibiliUrl="https://www.bilibili.com/video/BV1Mm421K7PV/"
-                                        images={[
-                                            "w1.png",
-                                            "w2.png",
-                                            "w3.png",
-                                            "w4.png",
-                                        ]}
-                                    >
-                                        <li><span className="font-medium text-gray-800">美术、动画模块</span>：骨骼设定、基础及其他动作制作，确认角色技能设计和动作融合方案，人物、场景、道具设计及资产制作。</li>
-                                        <li><span className="font-medium text-gray-800">游戏及编程模块</span>：整体剧情、关卡设计和规则制定，实现游戏核心功能，包括玩家操作、游戏逻辑、界面交互。</li>
-                                    </DetailedProjectCard>
-
-                                    {/* Other Projects Overview */}
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                        <h4 className="text-xl font-medium mb-4">📂 其他项目概览 <span className="text-sm font-normal text-gray-400 ml-2">Other Projects</span></h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <MiniProjectCard
-                                                title="陆河县公共壁画公益项目"
-                                                date="2025.10"
-                                                bilibiliUrl=""
-                                                images={[
-                                                    "luhe1.png",
-                                                ]}
-                                            />
-                                            <MiniProjectCard
-                                                title="桌游项目《OCEANIC CONSPIRACY》"
-                                                date="2024.11-2024.12"
-                                                bilibiliUrl=""
-                                                images={[
-                                                    "card3.png",
-                                                    "card1.png",
-                                                    "card2.png",
-                                                    "card4.png",
-                                                ]}
-                                            />
-                                            <MiniProjectCard
-                                                title="UE场景《ELDERVERSE》"
-                                                date="2024.03-2024.06"
-                                                bilibiliUrl="【vr游戏 ELDERVERSE】 https://www.bilibili.com/video/BV1phQuYNELc/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775"
-                                                images={[
-                                                    "elder1.png",
-                                                    "elder3.png",
-                                                    "elder4.png",
-                                                    "elder2.png",
-                                                ]}
-                                            />
-                                            <MiniProjectCard
-                                                title="商业短片设计《Prisoners of the Cycle》"
-                                                date="2024.03-2024.05"
-                                                bilibiliUrl="【3d动画短片 循环的囚徒】 https://www.bilibili.com/video/BV19mQuYpEGi/?share_source=copy_web&vd_source=fdfe81b101ea4ece3243c72ba8ef2775"
-                                                images={[
-                                                    "comic3.png",
-                                                    "comic1.png",
-                                                    "comic2.png",
-                                                    "comic3.png",
-                                                ]}
-                                            />
-                                            <MiniProjectCard
-                                                title="微信上架表情包"
-                                                date="2024"
-                                                bilibiliUrl=""
-                                                images={[
-                                                    "11.png",
-                                                    "22.png",
-                                                    "33.png",
-                                                ]}
-                                            />
-                                            <MiniProjectCard
-                                                title="《双人成行》游戏美术再设计"
-                                                date="2023.07-2023.08"
-                                                bilibiliUrl=""
-                                                images={[
-                                                    "111.png",
-                                                ]}
-                                            />
-                                            <MiniProjectCard
-                                                title="盲盒设计《Utopia Party》"
-                                                date="2023"
-                                                bilibiliUrl=""
-                                                images={[
-                                                    "1111.png",
-                                                ]}
-                                            />
-                                        </div>
-                                    </div>
+{/* Redundant projects removed - Merged into Unified Projects Section */}
                                 </div>
-                            </div>
-
-                            
-                        </div>
                     </section>
 
-                    {/* Portfolio / Selected Works Section */}
-                    <section id="portfolio" className="py-24 px-6">
+                    {/* Unified Projects Section */}
+                    <section id="projects" className="py-24 px-6">
                         <div className="max-w-7xl mx-auto">
-                            <div className="flex justify-between items-end mb-16">
-                                <div>
-                                    <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">精选作品 Selected Works</h2>
-                                    <p className="text-xl text-gray-500">7个精选项目 A collection of 7 projects.</p>
+                            <div className="mb-8">
+                    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-6">作品集项目 <span className="block text-xl md:text-2xl text-gray-400 font-normal mt-2">Portfolio Projects</span></h2>
+                    
+                    {/* NDA Disclaimer */}
+                    <div className="bg-amber-50/80 border border-amber-100 rounded-lg py-3 px-4 flex items-center gap-3 w-fit">
+                                    <div className="text-amber-500 shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                    </div>
+                                    <div className="text-sm text-amber-900/80">
+                                        <span className="font-medium">保密协议 NDA Notice: </span>
+                                        部分项目因保密协议无法展示全部细节。 Some details are omitted due to NDA.
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Filter Buttons */}
-                            <div className="flex gap-4 mb-12 overflow-x-auto pb-2">
-                                {[
-                                    { id: 'All', label: '全部 All' },
-                                    { id: 'UI/UX', label: 'UI/UX' },
-                                    { id: 'Game Art', label: '游戏美术' }
-                                ].map(item => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => setFilter(item.id)}
-                                        className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                                            filter === item.id 
-                                            ? 'bg-[#1d1d1f] text-white shadow-md transform scale-105' 
-                                            : 'bg-white text-gray-500 hover:bg-gray-200'
-                                        }`}
-                                    >
-                                        {item.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-                                {filteredProjects.map((project, index) => (
-                                    <ProjectCard 
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {projects.map((project, index) => (
+                                    <GridProjectCard 
                                         key={index}
-                                        title={project.title}
-                                        category={project.category}
-                                        image={project.image}
-                                        color={project.color}
-                                        onClick={() => setSelectedProject({
-                                            title: project.title,
-                                            category: project.category,
-                                            images: project.detailImages,
-                                            bilibiliUrl: project.bilibiliUrl
-                                        })} 
+                                        project={project}
+                                        onClick={() => setSelectedProject(project)}
                                     />
                                 ))}
                             </div>
