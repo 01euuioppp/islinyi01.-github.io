@@ -614,13 +614,13 @@
                 const originalStyle = window.getComputedStyle(document.body).overflow;
                 document.body.style.overflow = 'hidden';
                 return () => {
-                    document.body.style.overflow = '';
+                    document.body.style.overflow = 'auto';
                 };
             }, []);
 
             return (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-2">
-                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity" onClick={onClose}></div>
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-lg transition-opacity" onClick={onClose}></div>
                     <div className="relative w-full h-full sm:w-[90vw] sm:h-[90vh] bg-white sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
                         
                         {/* Header */}
@@ -672,17 +672,25 @@
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-bold text-[#1d1d1f] border-b pb-4">兴趣爱好 Hobbies</h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        {['🎮 游戏 Gaming', '📷 摄影 Photography', '🎨 绘画 Painting', '✈️ 旅行 Travel', '🛹 爬山 Hiking', '☕ 奶茶 Milktea'].map((hobby, i) => (
-                                            <div key={i} className="p-4 bg-gray-50 rounded-xl text-center text-gray-700 font-medium hover:bg-gray-100 transition-colors cursor-default">
-                                                {hobby}
-                                            </div>
-                                        ))}
+                                        {['🎨 插画绘制 Illustration', '📷 摄影采风 Photography', '🏊 游泳健身 Swimming', '🎲 潮玩收藏 Art Toys'].map((hobby, i) => {
+                                            const parts = hobby.split(' ');
+                                            const emoji = parts[0];
+                                            const cn = parts[1];
+                                            const en = parts.slice(2).join(' ');
+                                            return (
+                                                <div key={i} className="p-4 bg-gray-50 rounded-xl text-center hover:bg-gray-100 transition-colors cursor-default flex flex-col items-center justify-center gap-1">
+                                                    <span className="text-2xl mb-1">{emoji}</span>
+                                                    <span className="text-gray-800 font-medium">{cn}</span>
+                                                    <span className="text-gray-400 text-xs uppercase tracking-wider font-medium">{en}</span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
                             
                             <div className="py-12 text-center">
-                                <p className="text-gray-400 italic">"Stay hungry, stay foolish."</p>
+                                <p className="text-gray-400 italic">"人生不要東張西望"</p>
                             </div>
                         </div>
                     </div>
@@ -955,18 +963,68 @@
                             </h3>
                                 <div className="space-y-6">
                                     <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-start mb-2">
+                                        {/* Header */}
+                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-2">
                                             <div>
-                                                <h4 className="text-xl font-medium">压寨网络有限公司</h4>
-                                                <p className="text-gray-500">职位：美术设计师 Art Designer</p>
+                                                <h4 className="text-2xl font-bold text-[#1d1d1f]">压寨网络有限公司</h4>
+                                                <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                    <span className="font-medium text-gray-800">核心外宣美术设计师</span>
+                                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Art Designer</span>
+                                                </div>
                                             </div>
-                                            <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2025.06 - 至今</span>
+                                            <span className="text-sm font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap">2025.06 - 至今</span>
                                         </div>
-                                        <ul className="mt-4 space-y-2 text-gray-600 list-disc list-inside">
-                                            <li><span className="font-medium text-gray-800">独立完成直播活动视觉设计</span>：负责网页、Banner、礼物、座驾、特效等内容，注重互动体验与视觉情绪传达，具备<span className="font-medium text-gray-800">游戏化思维</span>，曾参与虚拟角色或场景设计，提升用户沉浸感与参与度。</li>
-                                            <li><span className="font-medium text-gray-800">参与App线上线下推广设计</span>：涵盖宣传图、启动页、动效视频等，掌握<span className="font-medium text-gray-800">多终端适配规范（iOS/Android）</span>，具备从视觉到交互的综合设计能力。</li>
-                                            <li><span className="font-medium text-gray-800">游戏UI与虚拟角色设计</span>：擅长多风格绘制与创意表达，能够根据产品定位与用户偏好，打造富有吸引力的视觉内容与虚拟道具形象。</li>
-                                        </ul>
+
+                                        {/* Summary Banner */}
+                                        <div className="mb-8 p-5 bg-blue-50/50 rounded-2xl border border-blue-100/50">
+                                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                                全面负责公司全流程视觉体系搭建与落地执行，工作覆盖平面视觉、UI 界面、动态效果、宣传视频、IP 形象设计、三维建模及周边衍生开发等多个领域；深度参与直播产品、App 运营、品牌推广与游戏化视觉相关项目，具备从静态视觉、交互界面、动态氛围到三维 IP、宣传物料的完整设计与落地能力。
+                                            </p>
+                                        </div>
+
+                                        {/* Core Responsibilities List */}
+                                        <div className="mb-6">
+                                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">核心职责 Core Responsibilities</h5>
+                                            <ul className="space-y-3">
+                                                <li className="flex items-start">
+                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">直播全场景视觉</span>
+                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">独立负责直播平台整体活动视觉落地，涵盖活动专题网页、运营 Banner、直播间礼物图标、座驾、转盘动效、氛围特效等全品类素材；以游戏化设计思维强化互动体验与视觉情绪表达，提升用户停留、互动率与沉浸感。</span>
+                                                    </div>
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">全平台 UI 设计</span>
+                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">主导并落地多款核心产品 UI（fusiya 后台、官网、firefly 选秀等），严格遵循 iOS/Android 多终端适配规范与设计系统，兼顾视觉美观与操作效率，实现「视觉 + 交互 + 产品逻辑」一体化输出。</span>
+                                                    </div>
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">动态视觉 & 视频</span>
+                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">独立完成动效设计与短视频全流程制作（直播间动效、礼物动效、转场特效、icon 动态化）；自主负责脚本、剪辑、字幕与音效合成，落地多条运营视频，满足线上推广与品牌曝光需求。</span>
+                                                    </div>
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">IP 设计 & 3D 建模</span>
+                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">搭建并落地品牌虚拟 IP 体系，负责原创设定、三视图、3D 建模、渲染及周边开发；参与虚拟角色与场景设计，丰富产品虚拟形象矩阵，强化品牌辨识度与用户情感连接。</span>
+                                                    </div>
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">App 推广视觉</span>
+                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">覆盖产品全周期推广设计（应用商店图、启动页、海报、线下物料）；根据渠道特性与用户画像调整风格，具备多风格绘制与快速迭代能力，支撑用户拉新与活动转化。</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -984,12 +1042,12 @@
                                                 { name: "NCDA 未来设计师数字艺术设计大赛 交互设计", award: "二等奖" },
                                                 { name: "NCDA 未来设计师数字艺术设计大赛 造型艺术", award: "三等奖" },
                                                 { name: "华灿两岸新锐设计竞赛·华灿奖", award: "三等奖" },
-                                                { name: "当代国际艺术与设计双年展·GSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才作品收藏" },
-                                                { name: "当代国际艺术与设计双年展·GSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才奖" }
+                                                { name: "当代国际艺术与设计双年展：\nGSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才作品收藏" },
+                                                { name: "当代国际艺术与设计双年展：\nGSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才奖" }
                                             ].map((item, index) => (
                                                 <li key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                                                    <span className="font-medium text-[#1d1d1f] mb-1 sm:mb-0 pr-4 leading-snug">{item.name}</span>
-                                                    <span className="text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 rounded whitespace-nowrap self-start sm:self-auto mt-1 sm:mt-0">{item.award}</span>
+                                                    <span className="font-medium text-[#1d1d1f] mb-1 sm:mb-0 pr-4 leading-snug whitespace-pre-line">{item.name}</span>
+                                                    <span className="text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 rounded whitespace-nowrap self-start sm:self-auto mt-1 sm:mt-0 flex-shrink-0">{item.award}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -1038,7 +1096,7 @@
                     <section id="projects" className="py-24 px-6">
                         <div className="max-w-7xl mx-auto">
                             <div className="mb-8">
-                    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-6">作品集项目 <span className="block text-xl md:text-2xl text-gray-400 font-normal mt-2">Portfolio Projects</span></h2>
+                    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-6">作品集 <span className="block text-xl md:text-2xl text-gray-400 font-normal mt-2">Portfolio</span></h2>
                     
                     {/* NDA Disclaimer */}
                     <div className="bg-amber-50/80 border border-amber-100 rounded-lg py-3 px-4 flex items-center gap-3 w-fit">
