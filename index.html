@@ -98,11 +98,44 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        /* Apple Glassmorphism Style */
         .glass-card {
             background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .glass-tag {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        .glass-date-badge {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+            color: #1d1d1f;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
         }
         .hover-trigger .hover-target {
             opacity: 0;
@@ -155,7 +188,42 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
+
+        // --- Components ---
+        
+        function ScrollReveal({ children, delay = 0, threshold = 0.1 }) {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.disconnect();
+                        }
+                    },
+                    { threshold }
+                );
+                
+                if (ref.current) {
+                    observer.observe(ref.current);
+                }
+
+                return () => observer.disconnect();
+            }, [threshold]);
+
+            return (
+                <div 
+                    ref={ref} 
+                    className={`transition-all duration-1000 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                    style={{ transitionDelay: `${delay}ms` }}
+                >
+                    {children}
+                </div>
+            );
+        }
 
         // --- Icons ---
         const Phone = ({ className }) => (
@@ -188,8 +256,8 @@
             const baseStyles = "inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 transform active:scale-95";
             const variants = {
                 primary: "bg-[#1d1d1f] text-white hover:bg-[#333]",
-                secondary: "bg-white text-[#1d1d1f] border border-gray-200 hover:border-gray-400 shadow-sm",
-                ghost: "text-[#1d1d1f] hover:bg-gray-100",
+                secondary: "glass-btn text-[#1d1d1f] hover:bg-white/60",
+                ghost: "text-[#1d1d1f] hover:bg-white/40 hover:backdrop-blur-sm",
             };
             
             return (
@@ -214,7 +282,7 @@
                     className="hover-trigger relative flex flex-col items-center justify-center group"
                     onClick={handleCopy}
                 >
-                    <div className={`p-4 rounded-full bg-white shadow-sm border border-gray-100 text-[#1d1d1f] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md cursor-pointer active:scale-95`}>
+                    <div className={`p-4 rounded-full glass-btn text-[#1d1d1f] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md cursor-pointer active:scale-95`}>
                         {icon}
                     </div>
                     <div className="hover-target absolute top-full mt-3 px-4 py-2 bg-[#1d1d1f]/90 backdrop-blur-md text-white text-sm rounded-xl shadow-xl whitespace-nowrap z-50 flex flex-col items-center min-w-[100px]">
@@ -229,35 +297,7 @@
             );
         };
 
-        const ProjectCard = ({ title, category, image, color, onClick }) => (
-            <div onClick={onClick} className="group relative rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer mb-8 break-inside-avoid">
-                <div className={`absolute inset-0 ${color || 'bg-gray-100'} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
-                
-                {/* Cover Image */}
-                {image ? (
-                    <img 
-                        src={image} 
-                        alt={title} 
-                        className="block w-full h-auto transition-transform duration-700 group-hover:scale-105"
-                    />
-                ) : (
-                    <div className="aspect-[4/3] flex items-center justify-center">
-                        <div className={`w-32 h-32 rounded-full ${color || 'bg-gray-200'} opacity-20 blur-3xl group-hover:scale-150 transition-transform duration-700`}></div>
-                    </div>
-                )}
-
-                {/* Overlay Gradient for Text Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
-
-                <div className="absolute bottom-0 left-0 p-8 w-full">
-                    <p className="text-sm font-semibold text-white/80 mb-1 uppercase tracking-wider">{category}</p>
-                    <h3 className="text-2xl font-bold text-white group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
-                        {title}
-                        <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-white" />
-                    </h3>
-                </div>
-            </div>
-        );
+        // ProjectCard removed (Unused)
 
         const ProjectDetailModal = ({ project, onClose }) => {
             if (!project) return null;
@@ -282,18 +322,18 @@
 
             return (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-2">
-                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity" onClick={onClose}></div>
-                    <div className="relative w-full h-full sm:w-[99vw] sm:h-[98vh] bg-white sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+                    <div className="absolute inset-0 bg-white/30 backdrop-blur-md transition-opacity" onClick={onClose}></div>
+                    <div className="relative w-full h-full sm:w-[99vw] sm:h-[98vh] glass-card sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
                         
                         {/* Header */}
-                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white z-10">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white/50 backdrop-blur-md z-10">
                             <div>
                                 <h3 className="text-2xl font-bold text-[#1d1d1f]">{project.title}</h3>
                                 <div className="flex items-center gap-3 mt-1">
                                     <p className="text-sm text-gray-500">{project.category}</p>
-                                    {project.bilibiliUrl && (
+                                    {(project.videoUrl || project.bilibiliUrl) && (
                                         <a 
-                                        href={project.bilibiliUrl} 
+                                        href={project.videoUrl || project.bilibiliUrl} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 text-pink-400 hover:text-pink-500 transition-colors bg-pink-50 px-3 py-1 rounded-full text-sm font-medium"
@@ -313,7 +353,7 @@
                         </div>
 
                         {/* Content - Scrollable */}
-                        <div className="overflow-y-auto bg-white">
+                        <div className="overflow-y-auto bg-transparent">
                             {/* Description Section */}
                             {project.description && (
                                 <div className="px-6 py-8 w-full border-b border-gray-100">
@@ -371,7 +411,7 @@
 
             return (
                 <div 
-                    className={`group relative bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-500 cursor-pointer border border-gray-100 flex flex-col h-full ${className}`}
+                    className={`group relative glass-card rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-500 cursor-pointer flex flex-col h-full ${className}`}
                     onClick={onClick}
                 >
                     <div className="aspect-[16/10] overflow-hidden bg-gray-100 relative shrink-0">
@@ -407,7 +447,7 @@
 
             return (
                 <div 
-                    className="group relative flex items-center justify-between py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer px-2"
+                    className="group relative flex items-center justify-between py-4 border-b border-gray-100 hover:bg-white/40 hover:backdrop-blur-sm rounded-lg transition-all cursor-pointer px-4"
                     onClick={onClick}
                 >
                     <div className="flex items-center gap-4">
@@ -418,7 +458,7 @@
 
                     {/* Hover Preview Image */}
                     {coverImage && (
-                        <div className="absolute right-0 bottom-full mb-2 w-48 aspect-video bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 translate-y-2 group-hover:translate-y-0 hidden md:block">
+                        <div className="absolute right-0 bottom-full mb-2 w-48 aspect-video glass-card rounded-lg overflow-hidden opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 translate-y-2 group-hover:translate-y-0 hidden md:block">
                             <img src={coverImage} alt="" className="w-full h-full object-cover" />
                         </div>
                     )}
@@ -484,7 +524,7 @@
                         <p className="mb-4"><span className="font-medium text-gray-800">文化赋能与品牌传播落地</span>：借助 IP 及周边的场景化应用，有效输出企业文化理念，提升核心用户的品牌认同感与归属感。</p>
                     </>
                 ),
-                type: "Other",
+                type: ["UI/UX", "IP Design", "3D"],
                 priority: true
             },
             // Priority 3
@@ -493,6 +533,7 @@
                 category: "Interaction Design / Game Art",
                 date: "2024.09-2025.03",
                 bilibiliUrl: "https://www.bilibili.com/video/BV14iG2ztEim/",
+                videoEmbed: "//player.bilibili.com/player.html?bvid=BV14iG2ztEim&page=1&high_quality=1&danmaku=0",
                 images: ["", "", ""],
                 description: (
                     <>
@@ -501,7 +542,7 @@
                         <p className="mb-4"><span className="font-medium text-gray-800">游戏机制与玩法设计</span>：制定核心游戏玩法，包括角色成长系统、任务挑战机制、社交互动。</p>
                     </>
                 ),
-                type: "Game Art",
+                type: ["Game Art", "UI/UX", "3D"],
                 priority: true
             },
             // Priority 4
@@ -510,6 +551,7 @@
                 category: "Indie Game / Game Design",
                 date: "2024.03-2024.07",
                 bilibiliUrl: "https://www.bilibili.com/video/BV1Mm421K7PV/",
+                videoEmbed: "//player.bilibili.com/player.html?bvid=BV1Mm421K7PV&page=1&high_quality=1&danmaku=0",
                 images: ["", "", ""],
                 description: (
                     <>
@@ -517,7 +559,7 @@
                         <p className="mb-4"><span className="font-medium text-gray-800">游戏及编程模块</span>：整体剧情、关卡设计和规则制定，实现游戏核心功能，包括玩家操作、游戏逻辑、界面交互。</p>
                     </>
                 ),
-                type: "Game Art",
+                type: ["Game Art", "UI/UX", "3D"],
                 priority: true
             },
             // Priority 5
@@ -526,7 +568,7 @@
                 category: "Board Game Design",
                 date: "2024.11-2024.12",
                 images: ["", "", ""],
-                type: "Game Art",
+                type: ["Game Art", "UI/UX", "3D"],
                 priority: true
             },
             // Priority 6
@@ -552,7 +594,7 @@
                 date: "2024.03-2024.06",
                 bilibiliUrl: "https://www.bilibili.com/video/BV1phQuYNELc/",
                 images: ["", "", ""],
-                type: "3D",
+                type: ["3D", "Game Art"],
                 priority: true
             },
             // Secondary Projects
@@ -561,7 +603,7 @@
                 category: "Public Art / Mural",
                 date: "2025.10",
                 images: ["", "", ""],
-                type: "Other",
+                type: "Game Art",
                 priority: false
             },
             {
@@ -570,7 +612,7 @@
                 date: "2024.03-2024.05",
                 bilibiliUrl: "https://www.bilibili.com/video/BV19mQuYpEGi/",
                 images: ["", "", ""],
-                type: "Animation",
+                type: ["Animation", "3D"],
                 priority: false
             },
             {
@@ -578,7 +620,7 @@
                 category: "Illustration / Sticker",
                 date: "2024",
                 images: ["", "", ""],
-                type: "UI/UX",
+                type: "Game Art",
                 priority: false
             },
             {
@@ -586,7 +628,7 @@
                 category: "Game Art Redesign",
                 date: "2023.07-2023.08",
                 images: ["", "", ""],
-                type: "Game Art",
+                type: ["Game Art", "3D"],
                 priority: false
             },
             {
@@ -594,7 +636,7 @@
                 category: "Product Design / Toy",
                 date: "2023",
                 images: ["", "", ""],
-                type: "Other",
+                type: ["Game Art", "3D"],
                 priority: false
             }
         ];
@@ -620,11 +662,11 @@
 
             return (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-2">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-lg transition-opacity" onClick={onClose}></div>
-                    <div className="relative w-full h-full sm:w-[90vw] sm:h-[90vh] bg-white sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+                    <div className="absolute inset-0 bg-white/30 backdrop-blur-md transition-opacity" onClick={onClose}></div>
+                    <div className="relative w-full h-full sm:w-[90vw] sm:h-[90vh] glass-card sm:rounded-xl shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
                         
                         {/* Header */}
-                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white z-10">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white/50 backdrop-blur-md z-10">
                             <h3 className="text-2xl font-bold text-[#1d1d1f]">关于我 About Me</h3>
                             <button 
                                 onClick={onClose}
@@ -635,7 +677,7 @@
                         </div>
 
                         {/* Content */}
-                        <div className="overflow-y-auto bg-white p-8 md:p-12">
+                        <div className="overflow-y-auto bg-transparent p-8 md:p-12">
                             <div className="max-w-3xl mx-auto space-y-12">
                                 {/* Intro */}
                                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
@@ -700,11 +742,12 @@
 
         function BackgroundDecoration() {
             return (
-                <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-                    <div className="absolute top-0 right-1/4 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-                    <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-                    <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-[#fbfbfd]">
+                    <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-blue-200/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob"></div>
+                    <div className="absolute top-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-purple-200/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000"></div>
+                    <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-pink-200/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-4000"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-yellow-200/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000"></div>
+                    <div className="absolute top-[40%] left-[30%] w-[30vw] h-[30vw] bg-cyan-200/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-3000"></div>
                 </div>
             );
         }
@@ -723,6 +766,40 @@
             );
         }
 
+        function NotebookHoles() {
+            // Simple, Minimalist Hole Pattern
+            // Width: 60px, Height: 80px (Spacing)
+            // Style: Soft dark circle with very subtle depth (neumorphism-like)
+            const holeSvg = encodeURIComponent(`
+<svg width="60" height="80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="40" r="8" fill="#1d1d1f" fill-opacity="0.05" />
+  <circle cx="30" cy="40" r="8" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" />
+</svg>
+            `.trim().replace(/\n/g, '').replace(/\s+/g, ' '));
+
+            return (
+                <>
+                    {/* Left Notebook Holes */}
+                    <div className="absolute left-0 top-0 bottom-0 w-[60px] z-40 hidden xl:block pointer-events-none"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml,${holeSvg}")`,
+                            backgroundRepeat: 'repeat-y',
+                            backgroundPosition: 'center top'
+                        }}
+                    ></div>
+                    
+                    {/* Right Notebook Holes */}
+                    <div className="absolute right-0 top-0 bottom-0 w-[60px] z-40 hidden xl:block pointer-events-none"
+                         style={{
+                            backgroundImage: `url("data:image/svg+xml,${holeSvg}")`,
+                            backgroundRepeat: 'repeat-y',
+                            backgroundPosition: 'center top'
+                        }}
+                    ></div>
+                </>
+            );
+        }
+
         function App() {
             const [selectedProject, setSelectedProject] = useState(null);
             const [filter, setFilter] = useState('All');
@@ -730,25 +807,27 @@
 
             const filteredProjects = projects.filter(p => {
                 if (filter === 'All') return true;
-                if (filter === '3D & Animation') return p.type === '3D' || p.type === 'Animation';
-                return p.type === filter;
+                const types = Array.isArray(p.type) ? p.type : [p.type];
+                if (filter === '3D & Animation') return types.includes('3D') || types.includes('Animation');
+                return types.includes(filter);
             });
 
             return (
                 <div className="min-h-screen font-sans selection:bg-black selection:text-white relative">
                     <BackgroundDecoration />
-                    <ScrollDecoration />
+                    <NotebookHoles />
+                    {/* ScrollDecoration removed for cleaner glass effect */}
                     {selectedProject && <ProjectDetailModal project={selectedProject} onClose={() => setSelectedProject(null)} />}
                     {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
                     
-                    {/* Navigation / Header */}
-                    <nav className="fixed top-0 w-full z-50 px-6 py-4 glass-card border-b-0">
-                        <div className="max-w-7xl mx-auto flex justify-between items-center">
-                            <div className="text-lg font-bold tracking-tight">林懿的主页 Lin Yi's Homepage</div>
-                            <div className="flex gap-4">
-                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => setShowAbout(true)}>关于我 About Me</Button>
-                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>简历 Resume</Button>
-                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm" onClick={() => document.getElementById('projects').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
+                    {/* Navigation / Header - Full Width Glass Style */}
+                    <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 bg-[rgba(255,255,255,0.2)] backdrop-blur-2xl backdrop-saturate-150 border-b border-white/20 transition-all duration-300">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center w-full">
+                            <div className="text-base md:text-lg font-bold tracking-tight text-[#1d1d1f] truncate">林懿的主页 Lin Yi's Homepage</div>
+                            <div className="flex gap-2 shrink-0">
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm rounded-full hover:bg-white/50" onClick={() => setShowAbout(true)}>关于我 About Me</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm rounded-full hover:bg-white/50" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>简历 Resume</Button>
+                                <Button variant="ghost" className="hidden sm:inline-flex px-4 py-2 text-sm rounded-full hover:bg-white/50" onClick={() => document.getElementById('projects').scrollIntoView({behavior: 'smooth'})}>作品集 Work</Button>
                             </div>
                         </div>
                     </nav>
@@ -771,9 +850,9 @@
 
                                 <div className="text-2xl md:text-3xl font-light leading-snug text-gray-600 max-w-xl">
                                     <div className="flex flex-wrap items-center gap-3 text-[#1d1d1f]">
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-full font-medium text-sm border border-gray-100 shadow-sm">UI/UX 设计</span>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-full font-medium text-sm border border-gray-100 shadow-sm">IP 设计</span>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-full font-medium text-sm border border-gray-100 shadow-sm">视频动画</span>
+                                        <span className="px-4 py-2 glass-btn rounded-full font-medium text-sm">UI/UX 设计</span>
+                                        <span className="px-4 py-2 glass-btn rounded-full font-medium text-sm">IP 设计</span>
+                                        <span className="px-4 py-2 glass-btn rounded-full font-medium text-sm">视频动画</span>
                                     </div>
                                     <div className="text-sm text-gray-500 mt-4 font-normal flex flex-wrap items-center gap-x-6">
                                         <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>UI/UX Design</span>
@@ -824,77 +903,77 @@
                                     {/* Distributed Floating Tags - Circular Layout */}
                                     {/* 0. Top (12 o'clock) */}
                                     <div className="absolute top-[8%] left-[50%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🎬 视频
                                         </span>
                                     </div>
 
                                     {/* 1. Top Right (1 o'clock) */}
                                     <div className="absolute top-[14.7%] left-[72.7%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0.4s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🎞️ 动画
                                         </span>
                                     </div>
 
                                     {/* 2. Right Top (2 o'clock) */}
                                     <div className="absolute top-[32.8%] left-[88.2%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '0.8s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🧊 建模
                                         </span>
                                     </div>
 
                                     {/* 3. Right (3 o'clock) */}
                                     <div className="absolute top-[55.9%] left-[91.6%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '1.2s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🧸 IP设计
                                         </span>
                                     </div>
 
                                     {/* 4. Right Bottom (4 o'clock) */}
                                     <div className="absolute top-[77.3%] left-[81.5%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '1.6s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             📈 营销
                                         </span>
                                     </div>
 
                                     {/* 5. Bottom Right (5 o'clock) */}
                                     <div className="absolute top-[90.3%] left-[61.8%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.0s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🎁 周边
                                         </span>
                                     </div>
 
                                     {/* 6. Bottom (6 o'clock) */}
                                     <div className="absolute top-[90.3%] left-[38.2%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.4s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🖥️ GUI
                                         </span>
                                     </div>
 
                                     {/* 7. Bottom Left (7 o'clock) */}
                                     <div className="absolute top-[77.3%] left-[18.5%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '2.8s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🎮 游戏策划
                                         </span>
                                     </div>
 
                                     {/* 8. Left Bottom (8 o'clock) */}
                                     <div className="absolute top-[55.9%] left-[8.4%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '3.2s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🤖 AIGC
                                         </span>
                                     </div>
 
                                     {/* 9. Left (9 o'clock) */}
                                     <div className="absolute top-[32.8%] left-[11.8%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '3.6s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             👁️ 视觉
                                         </span>
                                     </div>
 
                                     {/* 10. Top Left (10 o'clock) */}
                                     <div className="absolute top-[14.7%] left-[27.3%] z-20 -translate-x-1/2 -translate-y-1/2 animate-float-medium" style={{animationDelay: '4.0s'}}>
-                                        <span className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/50 whitespace-nowrap select-none pointer-events-none">
+                                        <span className="px-6 py-3 bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg text-sm font-medium text-gray-700 border border-white/40 whitespace-nowrap select-none pointer-events-none">
                                             🎨 UI/UX
                                         </span>
                                     </div>
@@ -906,7 +985,7 @@
                         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer animate-bounce" onClick={() => document.getElementById('resume').scrollIntoView({behavior: 'smooth'})}>
                             <div className="flex flex-col items-center gap-2 group">
                                 <span className="text-xs text-gray-400 font-medium tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">向下滑动 Scroll Down</span>
-                                <div className="p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 hover:bg-white transition-colors text-gray-500 group-hover:text-black">
+                                <div className="p-3 glass-btn rounded-full hover:bg-white transition-colors text-gray-500 group-hover:text-black">
                                     <ArrowDown className="w-6 h-6" />
                                 </div>
                             </div>
@@ -922,38 +1001,40 @@
                                 <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
                                 🎓 教育经历 <span className="text-sm font-normal text-gray-400 ml-2">Education</span>
                             </h3>
-                                <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <h4 className="text-xl font-medium">深圳技术大学</h4>
-                                            <p className="text-gray-500">专业：艺术与科技 Major: Art & Technology</p>
+                                <ScrollReveal>
+                                    <div className="glass-card p-8 rounded-3xl transition-all duration-300 hover:shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h4 className="text-xl font-medium">深圳技术大学</h4>
+                                                <p className="text-gray-500">专业：艺术与科技 Major: Art & Technology</p>
+                                            </div>
+                                            <span className="text-sm glass-date-badge px-4 py-1.5 rounded-full">2021.09 - 2025.06</span>
                                         </div>
-                                        <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2021.09 - 2025.06</span>
-                                    </div>
-                                    <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
-                                        <p>GPA：<span className="font-semibold text-[#1d1d1f] bg-yellow-100 px-1 rounded">3.88/4.5（专业第一）</span></p>
-                                        <div className="mt-4">
-                                            <span className="font-medium text-[#1d1d1f] block mb-3">主修课程 Core Courses</span>
-                                            <div className="flex flex-wrap gap-2">
-                                                {[
-                                                { name: 'Unity3D游戏设计', grade: 'A+' },
-                                                { name: '三维动画', grade: 'A+' },
-                                                { name: '叙事与分镜', grade: 'A+' },
-                                                { name: 'Arduino编程', grade: 'A+' },
-                                                { name: '动画原型设计', grade: 'A+' },
-                                                { name: '数字雕塑', grade: 'A+' },
-                                            ].map((course, index) => (
-                                                    <div key={index} className="pl-3 pr-2 py-1.5 bg-gray-50 rounded-lg border border-gray-100 flex items-center gap-2 transition-colors hover:border-gray-200">
-                                                        <span className="text-sm text-gray-700">{course.name}</span>
-                                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-gray-200 text-gray-600">
-                                                            {course.grade}
-                                                        </span>
-                                                    </div>
-                                                ))}
+                                        <div className="text-gray-600 mt-4 leading-relaxed space-y-2">
+                                            <p>GPA：<span className="font-semibold text-[#1d1d1f] glass-tag px-2 py-0.5 rounded">3.88/4.5（专业第一）</span></p>
+                                            <div className="mt-4">
+                                                <span className="font-medium text-[#1d1d1f] block mb-3">主修课程 Core Courses</span>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {[
+                                                    { name: 'Unity3D游戏设计', grade: 'A+' },
+                                                    { name: '三维动画', grade: 'A+' },
+                                                    { name: '叙事与分镜', grade: 'A+' },
+                                                    { name: 'Arduino编程', grade: 'A+' },
+                                                    { name: '动画原型设计', grade: 'A+' },
+                                                    { name: '数字雕塑', grade: 'A+' },
+                                                ].map((course, index) => (
+                                                        <div key={index} className="pl-3 pr-2 py-1.5 glass-tag rounded-lg flex items-center gap-2 transition-colors hover:bg-white/60">
+                                                            <span className="text-sm text-gray-700">{course.name}</span>
+                                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/50 text-gray-600">
+                                                                {course.grade}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </ScrollReveal>
                             </div>
 
                             {/* Work & Internship */}
@@ -962,70 +1043,70 @@
                                 💼 工作经历 <span className="text-sm font-normal text-gray-400 ml-2">Experience</span>
                             </h3>
                                 <div className="space-y-6">
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                        {/* Header */}
-                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-2">
-                                            <div>
-                                                <h4 className="text-2xl font-bold text-[#1d1d1f]">压寨网络有限公司</h4>
-                                                <div className="flex flex-wrap items-center gap-2 mt-1">
-                                                    <span className="font-medium text-gray-800">核心外宣美术设计师</span>
-                                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Art Designer</span>
+                                    <ScrollReveal>
+                                        <div className="glass-card p-8 rounded-3xl transition-all duration-300 hover:shadow-lg">
+                                            {/* Header */}
+                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-2">
+                                                <div>
+                                                    <h4 className="text-2xl font-bold text-[#1d1d1f]">压寨网络有限公司</h4>
+                                                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                        <span className="font-medium text-gray-800">核心外宣美术设计师</span>
+                                                        <span className="text-xs text-gray-500 glass-tag px-2 py-0.5 rounded">Art Designer</span>
+                                                    </div>
                                                 </div>
+                                                <span className="text-sm glass-date-badge px-4 py-1.5 rounded-full whitespace-nowrap">2025.06 - 至今</span>
                                             </div>
-                                            <span className="text-sm font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full whitespace-nowrap">2025.06 - 至今</span>
+
+                                            {/* Summary Banner */}
+                                            <div className="mb-8 p-6 glass-panel rounded-2xl">
+                                                <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                                    全面负责公司全流程视觉体系搭建与落地执行，工作覆盖平面视觉、UI 界面、动态效果、宣传视频、IP 形象设计、三维建模及周边衍生开发等多个领域；深度参与直播产品、App 运营、品牌推广与游戏化视觉相关项目，具备从静态视觉、交互界面、动态氛围到三维 IP、宣传物料的完整设计与落地能力。
+                                                </p>
+                                            </div>
+
+                                            {/* Core Responsibilities List */}
+                                            <div className="mb-6">
+                                                <h5 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">核心职责 Core Responsibilities</h5>
+                                                <ul className="space-y-3">
+                                                    <li className="flex items-start">
+                                                        <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                            <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">直播全场景视觉</span>
+                                                            <span className="text-gray-600 text-sm leading-relaxed text-justify">独立负责直播平台整体活动视觉落地，涵盖活动专题网页、运营 Banner、直播间礼物图标、座驾、转盘动效、氛围特效等全品类素材；以游戏化设计思维强化互动体验与视觉情绪表达，提升用户停留、互动率与沉浸感。</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                            <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">全平台 UI 设计</span>
+                                                            <span className="text-gray-600 text-sm leading-relaxed text-justify">主导并落地多款核心产品 UI（fusiya 后台、官网、firefly 选秀等），严格遵循 iOS/Android 多终端适配规范与设计系统，兼顾视觉美观与操作效率，实现「视觉 + 交互 + 产品逻辑」一体化输出。</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                            <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">动态视觉 & 视频</span>
+                                                            <span className="text-gray-600 text-sm leading-relaxed text-justify">独立完成动效设计与短视频全流程制作（直播间动效、礼物动效、转场特效、icon 动态化）；自主负责脚本、剪辑、字幕与音效合成，落地多条运营视频，满足线上推广与品牌曝光需求。</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                            <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">IP 设计 & 3D 建模</span>
+                                                            <span className="text-gray-600 text-sm leading-relaxed text-justify">搭建并落地品牌虚拟 IP 体系，负责原创设定、三视图、3D 建模、渲染及周边开发；参与虚拟角色与场景设计，丰富产品虚拟形象矩阵，强化品牌辨识度与用户情感连接。</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                                                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
+                                                            <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">App 推广视觉</span>
+                                                            <span className="text-gray-600 text-sm leading-relaxed text-justify">覆盖产品全周期推广设计（应用商店图、启动页、海报、线下物料）；根据渠道特性与用户画像调整风格，具备多风格绘制与快速迭代能力，支撑用户拉新与活动转化。</span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-
-                                        {/* Summary Banner */}
-                                        <div className="mb-8 p-5 bg-blue-50/50 rounded-2xl border border-blue-100/50">
-                                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                                                全面负责公司全流程视觉体系搭建与落地执行，工作覆盖平面视觉、UI 界面、动态效果、宣传视频、IP 形象设计、三维建模及周边衍生开发等多个领域；深度参与直播产品、App 运营、品牌推广与游戏化视觉相关项目，具备从静态视觉、交互界面、动态氛围到三维 IP、宣传物料的完整设计与落地能力。
-                                            </p>
-                                        </div>
-
-                                        {/* Core Responsibilities List */}
-                                        <div className="mb-6">
-                                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">核心职责 Core Responsibilities</h5>
-                                            <ul className="space-y-3">
-                                                <li className="flex items-start">
-                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
-                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
-                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">直播全场景视觉</span>
-                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">独立负责直播平台整体活动视觉落地，涵盖活动专题网页、运营 Banner、直播间礼物图标、座驾、转盘动效、氛围特效等全品类素材；以游戏化设计思维强化互动体验与视觉情绪表达，提升用户停留、互动率与沉浸感。</span>
-                                                    </div>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
-                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
-                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">全平台 UI 设计</span>
-                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">主导并落地多款核心产品 UI（fusiya 后台、官网、firefly 选秀等），严格遵循 iOS/Android 多终端适配规范与设计系统，兼顾视觉美观与操作效率，实现「视觉 + 交互 + 产品逻辑」一体化输出。</span>
-                                                    </div>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
-                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
-                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">动态视觉 & 视频</span>
-                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">独立完成动效设计与短视频全流程制作（直播间动效、礼物动效、转场特效、icon 动态化）；自主负责脚本、剪辑、字幕与音效合成，落地多条运营视频，满足线上推广与品牌曝光需求。</span>
-                                                    </div>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
-                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
-                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">IP 设计 & 3D 建模</span>
-                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">搭建并落地品牌虚拟 IP 体系，负责原创设定、三视图、3D 建模、渲染及周边开发；参与虚拟角色与场景设计，丰富产品虚拟形象矩阵，强化品牌辨识度与用户情感连接。</span>
-                                                    </div>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <span className="mr-3 mt-2 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
-                                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1">
-                                                        <span className="font-bold text-gray-900 w-[160px] flex-shrink-0">App 推广视觉</span>
-                                                        <span className="text-gray-600 text-sm leading-relaxed text-justify">覆盖产品全周期推广设计（应用商店图、启动页、海报、线下物料）；根据渠道特性与用户画像调整风格，具备多风格绘制与快速迭代能力，支撑用户拉新与活动转化。</span>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-
-                                    </div>
+                                    </ScrollReveal>
                                 </div>
                             </div>
 
@@ -1035,51 +1116,55 @@
                                     <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
                                         🏆 获奖信息 <span className="text-sm font-normal text-gray-400 ml-2">Awards</span>
                                     </h3>
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm">
-                                        <ul className="space-y-6">
-                                            {[
-                                                { name: "NCDA 未来设计师数字艺术设计大赛 艺术疗愈", award: "一等奖" },
-                                                { name: "NCDA 未来设计师数字艺术设计大赛 交互设计", award: "二等奖" },
-                                                { name: "NCDA 未来设计师数字艺术设计大赛 造型艺术", award: "三等奖" },
-                                                { name: "华灿两岸新锐设计竞赛·华灿奖", award: "三等奖" },
-                                                { name: "当代国际艺术与设计双年展：\nGSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才作品收藏" },
-                                                { name: "当代国际艺术与设计双年展：\nGSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才奖" }
-                                            ].map((item, index) => (
-                                                <li key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                                                    <span className="font-medium text-[#1d1d1f] mb-1 sm:mb-0 pr-4 leading-snug whitespace-pre-line">{item.name}</span>
-                                                    <span className="text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 rounded whitespace-nowrap self-start sm:self-auto mt-1 sm:mt-0 flex-shrink-0">{item.award}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                                    <ScrollReveal delay={200}>
+                                        <div className="glass-card p-8 rounded-3xl transition-all duration-300 hover:shadow-lg">
+                                            <ul className="space-y-6">
+                                                {[
+                                                    { name: "NCDA 未来设计师数字艺术设计大赛 艺术疗愈", award: "一等奖" },
+                                                    { name: "NCDA 未来设计师数字艺术设计大赛 交互设计", award: "二等奖" },
+                                                    { name: "NCDA 未来设计师数字艺术设计大赛 造型艺术", award: "三等奖" },
+                                                    { name: "华灿两岸新锐设计竞赛·华灿奖", award: "三等奖" },
+                                                    { name: "当代国际艺术与设计双年展：\nGSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才作品收藏" },
+                                                    { name: "当代国际艺术与设计双年展：\nGSSP金曦奖国际技术与设计大赛未来艺术设计", award: "优秀人才奖" }
+                                                ].map((item, index) => (
+                                                    <li key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                                        <span className="font-medium text-[#1d1d1f] mb-1 sm:mb-0 pr-4 leading-snug whitespace-pre-line">{item.name}</span>
+                                                        <span className="text-gray-500 text-xs font-medium glass-tag px-2 py-1 rounded whitespace-nowrap self-start sm:self-auto mt-1 sm:mt-0 flex-shrink-0">{item.award}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </ScrollReveal>
                                 </div>
                                 
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-semibold text-[#1d1d1f] border-b pb-2 flex items-center gap-2">
                                         🛠 技能 <span className="text-sm font-normal text-gray-400 ml-2">Skills</span>
                                     </h3>
-                                    <div className="bg-white p-8 rounded-3xl shadow-sm">
-                                        <div className="mb-8">
-                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">软件与技术 Software & Tech</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {['Blender', 'Zbrush', 'After Effect', 'Figma', '蓝湖', 'Unity', 'Spine', 'Sai', 'CAD', 'Midjourney', 'Stable Diffusion', 'Photoshop', 'illustrator', '即梦/可灵', 'Unreal Engine', 'Substance Painter', 'Arduino', 'C++'].map(skill => (
-                                                    <span key={skill} className="px-3 py-1.5 bg-[#f5f5f7] text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
-                                                        {skill}
-                                                    </span>
-                                                ))}
+                                    <ScrollReveal delay={400}>
+                                        <div className="glass-card p-8 rounded-3xl transition-all duration-300 hover:shadow-lg">
+                                            <div className="mb-8">
+                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">软件与技术 Software & Tech</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {['Blender', 'Zbrush', 'After Effect', 'Figma', '蓝湖', 'Unity', 'Spine', 'Sai', 'CAD', 'Midjourney', 'Stable Diffusion', 'Photoshop', 'illustrator', '即梦/可灵', 'Unreal Engine', 'Substance Painter', 'Arduino', 'C++'].map(skill => (
+                                                        <span key={skill} className="px-3 py-1.5 glass-tag text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">艺术与工具 Artistic & Tools</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {['动捕设备', '表情包', '逐帧动画', '相机', '3D打印机', '激光切割机', '泥塑', '国画', '水彩', '铅笔画', '粘土'].map(skill => (
+                                                        <span key={skill} className="px-3 py-1.5 glass-tag text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">艺术与工具 Artistic & Tools</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {['动捕设备', '表情包', '逐帧动画', '相机', '3D打印机', '激光切割机', '泥塑', '国画', '水彩', '铅笔画', '粘土'].map(skill => (
-                                                    <span key={skill} className="px-3 py-1.5 bg-[#f5f5f7] text-gray-700 rounded-lg text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 cursor-default">
-                                                        {skill}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </ScrollReveal>
                                 </div>
                             </div>
 
@@ -1112,14 +1197,14 @@
 
                             {/* Filter Tabs */}
                             <div className="flex flex-wrap gap-2 mb-12">
-                                {['All', 'UI/UX', 'Game Art', '3D & Animation', 'Other'].map(cat => (
+                                {['All', 'UI/UX', 'Game Art', '3D & Animation'].map(cat => (
                                     <button
                                         key={cat}
                                         onClick={() => setFilter(cat)}
                                         className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                                             filter === cat 
                                             ? 'bg-[#1d1d1f] text-white shadow-lg scale-105' 
-                                            : 'bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                            : 'glass-btn text-gray-500 hover:text-gray-900 hover:scale-105'
                                         }`}
                                     >
                                         {cat}
@@ -1129,11 +1214,12 @@
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {filteredProjects.filter(p => p.priority !== false).map((project, index) => (
-                                    <GridProjectCard 
-                                        key={index}
-                                        project={project}
-                                        onClick={() => setSelectedProject(project)}
-                                    />
+                                    <ScrollReveal key={index} delay={index * 50}>
+                                        <GridProjectCard 
+                                            project={project}
+                                            onClick={() => setSelectedProject(project)}
+                                        />
+                                    </ScrollReveal>
                                 ))}
                             </div>
 
