@@ -803,9 +803,10 @@
         function App() {
             const [selectedProject, setSelectedProject] = useState(null);
             const [filter, setFilter] = useState('All');
-            const [showAbout, setShowAbout] = useState(false);
+    const [showAbout, setShowAbout] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(false);
 
-            const filteredProjects = projects.filter(p => {
+    const filteredProjects = projects.filter(p => {
                 if (filter === 'All') return true;
                 const types = Array.isArray(p.type) ? p.type : [p.type];
                 if (filter === '3D & Animation') return types.includes('3D') || types.includes('Animation');
@@ -1190,32 +1191,7 @@
 
 
 {/* Redundant projects removed - Merged into Unified Projects Section */}
-                                    {/* Offline Meeting Invitation */}
-                            <div className="mt-20 text-center animate-fade-in-up">
-                                <div className="inline-block glass-card px-8 py-8 rounded-3xl border border-white/60 shadow-sm max-w-3xl mx-auto relative overflow-hidden group hover:shadow-md transition-all duration-300">
-                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-50"></div>
-                                    
-                                    <h3 className="text-xl md:text-2xl font-semibold text-[#1d1d1f] mb-3">
-                                        ☕️ 预约线下交流 Let's Chat Offline
-                                    </h3>
-                                    
-                                    <p className="text-gray-600 leading-relaxed mb-4">
-                                        如果您对我的设计与项目感兴趣，非常欢迎预约线下交流。<br/>
-                                        届时我将向您展示更多<span className="font-medium text-[#1d1d1f]">不便在网页公开的商业项目</span>与详细设计思考。
-                                    </p>
-                                    
-                                    <p className="text-sm text-gray-400 font-light">
-                                        If you're interested in my work, I'd love to meet up!<br/>
-                                        I can share more confidential commercial projects and detailed case studies that aren't available online.
-                                    </p>
 
-                                    <div className="mt-6 flex justify-center gap-4">
-                                        <button onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} className="px-6 py-2 glass-btn rounded-full text-sm font-medium hover:bg-[#1d1d1f] hover:text-white transition-all duration-300">
-                                            联系我 Contact Me
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </section>
 
@@ -1282,6 +1258,75 @@
                                     </div>
                                 </div>
                             )}
+
+                            {/* Offline Meeting Invitation */}
+                            <div className="mt-24 mb-8 text-center animate-fade-in-up">
+                                <div className="inline-block glass-card px-8 py-10 rounded-3xl border border-white/60 shadow-sm w-full max-w-4xl mx-auto relative overflow-hidden group hover:shadow-md transition-all duration-300 text-left">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-50"></div>
+                                    
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                                        <div className="flex-1 space-y-4">
+                                            <h3 className="text-xl md:text-2xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+                                                <span>☕️</span>
+                                                <span>预约线下交流 Let's Chat Offline</span>
+                                            </h3>
+                                            
+                                            <div className="space-y-3 text-gray-600 leading-relaxed text-justify">
+                                                <p>
+                                                    如果您对我的设计与项目感兴趣，非常欢迎预约线下交流。届时我将向您展示更多<span className="font-medium text-[#1d1d1f]">不便在网页公开的商业项目</span>与详细设计思考。
+                                                </p>
+                                                <p className="text-sm text-gray-400 font-light">
+                                                    If you're interested in my work, I'd love to meet up! I can share more confidential commercial projects and detailed case studies that aren't available online.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-shrink-0 flex justify-center md:justify-end">
+                                            <button 
+                                                onClick={() => {
+                                                    const wechatId = 'Happy628_01';
+                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                        navigator.clipboard.writeText(wechatId).then(() => {
+                                                            setCopySuccess(true);
+                                                            setTimeout(() => setCopySuccess(false), 2000);
+                                                        });
+                                                    } else {
+                                                        // Fallback
+                                                        const textArea = document.createElement("textarea");
+                                                        textArea.value = wechatId;
+                                                        document.body.appendChild(textArea);
+                                                        textArea.select();
+                                                        try {
+                                                            document.execCommand('copy');
+                                                            setCopySuccess(true);
+                                                            setTimeout(() => setCopySuccess(false), 2000);
+                                                        } catch (err) {
+                                                            console.error('Fallback copy failed', err);
+                                                        }
+                                                        document.body.removeChild(textArea);
+                                                    }
+                                                }}
+                                                className={`px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 border ${
+                                                    copySuccess 
+                                                    ? 'bg-green-500 text-white shadow-lg scale-105 border-green-400' 
+                                                    : 'glass-btn border-white/40 hover:bg-[#1d1d1f] hover:text-white'
+                                                }`}
+                                            >
+                                                {copySuccess ? (
+                                                    <>
+                                                        <span className="text-lg">✅</span>
+                                                        已复制 WeChat ID
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        联系我 Contact Me
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
